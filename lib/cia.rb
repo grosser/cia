@@ -23,7 +23,7 @@ module CIA
 
   def self.record_audit(event_type, object)
     CIA.current_transaction.record(event_type, object)
-  rescue => e
+  rescue Object => e
     Rails.logger.error("Failed to record audit: #{e}\n#{e.backtrace}")
     raise e unless Rails.env.production?
   end
