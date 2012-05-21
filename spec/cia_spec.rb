@@ -1,50 +1,50 @@
 require 'spec_helper'
 
-describe ActiveAuditing do
+describe CIA do
   it "has a VERSION" do
-    ActiveAuditing::VERSION.should =~ /^[\.\da-z]+$/
+    CIA::VERSION.should =~ /^[\.\da-z]+$/
   end
 
   describe ".audit" do
     it "has no transaction when it starts" do
-      ActiveAuditing.current_transaction.should == ActiveAuditing::NullTransaction
+      CIA.current_transaction.should == CIA::NullTransaction
     end
 
     it "starts a new transaction" do
       result = 1
-      ActiveAuditing.audit({}) do
-        result = ActiveAuditing.current_transaction
+      CIA.audit({}) do
+        result = CIA.current_transaction
       end
-      result.class.should == ActiveAuditing::Transaction
+      result.class.should == CIA::Transaction
     end
 
     it "stops the transaction after the block" do
-      ActiveAuditing.audit({}){}
-      ActiveAuditing.current_transaction.should == ActiveAuditing::NullTransaction
+      CIA.audit({}){}
+      CIA.current_transaction.should == CIA::NullTransaction
     end
 
     it "returns the block content" do
-      ActiveAuditing.audit({}){ 1 }.should == 1
+      CIA.audit({}){ 1 }.should == 1
     end
 
     it "is threadsafe" do
       Thread.new do
-        ActiveAuditing.audit({}) do
+        CIA.audit({}) do
           sleep 0.04
         end
       end
       sleep 0.01
-      ActiveAuditing.current_transaction.should == ActiveAuditing::NullTransaction
+      CIA.current_transaction.should == CIA::NullTransaction
       sleep 0.04 # so next tests dont fail
     end
   end
 
   describe ".record_audit" do
     let(:object) { Car.new }
-    let(:transaction) { ActiveAuditing.current_transaction }
+    let(:transaction) { CIA.current_transaction }
 
     around do |example|
-      ActiveAuditing.audit :actor => User.create! do
+      CIA.audit :actor => User.create! do
         example.call
       end
     end
@@ -57,24 +57,24 @@ describe ActiveAuditing do
     it "tracks create" do
       expect{
         object.save!
-      }.to change{ ActiveAuditing::Event.count }.by(+1)
-      ActiveAuditing::Event.last.class.should == ActiveAuditing::CreateEvent
+      }.to change{ CIA::Event.count }.by(+1)
+      CIA::Event.last.class.should == CIA::CreateEvent
     end
 
     it "tracks delete" do
       object.save!
       expect{
         object.destroy
-      }.to change{ ActiveAuditing::Event.count }.by(+1)
-      ActiveAuditing::Event.last.class.should == ActiveAuditing::DeleteEvent
+      }.to change{ CIA::Event.count }.by(+1)
+      CIA::Event.last.class.should == CIA::DeleteEvent
     end
 
     it "tracks update" do
       object.save!
       expect{
         object.update_attributes(:wheels => 3)
-      }.to change{ ActiveAuditing::Event.count }.by(+1)
-      ActiveAuditing::Event.last.class.should == ActiveAuditing::UpdateEvent
+      }.to change{ CIA::Event.count }.by(+1)
+      CIA::Event.last.class.should == CIA::UpdateEvent
     end
 
     context "exceptions" do

@@ -1,3 +1,3 @@
-module ActiveAuditing
+module CIA
   VERSION = '0.0.0'
 end

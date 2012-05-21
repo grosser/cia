@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_auditing (0.0.0)
+    cia (0.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -41,9 +41,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_auditing!
   activerecord
   appraisal
+  cia!
   rake
   rspec (~> 2)
   sqlite3

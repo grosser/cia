@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift 'lib'
-require 'active_auditing'
+require 'cia'
 
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
@@ -42,20 +42,20 @@ class User < ActiveRecord::Base
 end
 
 class Car < ActiveRecord::Base
-  include ActiveAuditing::Auditable
+  include CIA::Auditable
   audit_attribute :wheels
 end
 
 class CarWithAMessage < ActiveRecord::Base
   self.table_name = "cars"
-  include ActiveAuditing::Auditable
+  include CIA::Auditable
   audit_attribute :wheels
   attr_accessor :audit_message
 end
 
 class CarWith3Attributes < ActiveRecord::Base
   self.table_name = "cars"
-  include ActiveAuditing::Auditable
+  include CIA::Auditable
   audit_attribute :wheels, :color
   audit_attribute :drivers
 end
@@ -69,13 +69,13 @@ class CarWithoutObservers2 < ActiveRecord::Base
 end
 
 def create_event
-  transaction = ActiveAuditing::Transaction.create!(:actor => User.create!)
-  ActiveAuditing::UpdateEvent.create!(:source => Car.create!, :transaction => transaction)
+  transaction = CIA::Transaction.create!(:actor => User.create!)
+  CIA::UpdateEvent.create!(:source => Car.create!, :transaction => transaction)
 end
 
 def create_change
   event = create_event
-  ActiveAuditing::AttributeChange.create!(:event => event, :source => event.source, :attribute_name => "bar")
+  CIA::AttributeChange.create!(:event => event, :source => event.source, :attribute_name => "bar")
 end
 
 module Rails

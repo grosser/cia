@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ActiveAuditing::Transaction do
+describe CIA::Transaction do
   it "has many events" do
     event = create_event
     event.transaction.events.should == [event]
@@ -11,12 +11,12 @@ describe ActiveAuditing::Transaction do
       event.attribute_changes.map { |c| [c.attribute_name, c.old_value, c.new_value] }
     end
 
-    let(:transaction){ ActiveAuditing::Transaction.new(:actor => User.create!) }
+    let(:transaction){ CIA::Transaction.new(:actor => User.create!) }
 
     it "records attribute creations" do
       source = Car.create!
       source.wheels = 4
-      event = transaction.record(ActiveAuditing::UpdateEvent, source)
+      event = transaction.record(CIA::UpdateEvent, source)
 
       parse_event_changes(event).should == [["wheels", nil, "4"]]
     end
@@ -26,7 +26,7 @@ describe ActiveAuditing::Transaction do
       source.wheels = 4
       source.drivers = 2
       source.color = "red"
-      event = transaction.record(ActiveAuditing::UpdateEvent, source)
+      event = transaction.record(CIA::UpdateEvent, source)
 
       parse_event_changes(event).should =~ [["wheels", nil, "4"], ["drivers", nil, "2"], ["color", nil, "red"]]
     end
@@ -34,14 +34,14 @@ describe ActiveAuditing::Transaction do
     it "records attribute changes" do
       source = Car.create!(:wheels => 2)
       source.wheels = 4
-      event = transaction.record(ActiveAuditing::UpdateEvent, source)
+      event = transaction.record(CIA::UpdateEvent, source)
       parse_event_changes(event).should == [["wheels", "2", "4"]]
     end
 
     it "records attribute deletions" do
       source = Car.create!(:wheels => 2)
       source.wheels = nil
-      event = transaction.record(ActiveAuditing::UpdateEvent, source)
+      event = transaction.record(CIA::UpdateEvent, source)
       parse_event_changes(event).should == [["wheels", "2", nil]]
     end
 
@@ -50,8 +50,8 @@ describe ActiveAuditing::Transaction do
       source.drivers = 2
       event = nil
       expect{
-        event = transaction.record(ActiveAuditing::UpdateEvent, source)
-      }.to_not change{ ActiveAuditing::Event.count }
+        event = transaction.record(CIA::UpdateEvent, source)
+      }.to_not change{ CIA::Event.count }
 
       event.should == nil
     end
@@ -59,7 +59,7 @@ describe ActiveAuditing::Transaction do
     it "records audit_message as message even if there are no changes" do
       source = CarWithAMessage.create!
       source.audit_message = "Foo"
-      event = transaction.record(ActiveAuditing::UpdateEvent, source)
+      event = transaction.record(CIA::UpdateEvent, source)
 
       event.message.should == "Foo"
       parse_event_changes(event).should == []
@@ -67,7 +67,7 @@ describe ActiveAuditing::Transaction do
 
     it "record non-updates even without changes" do
       source = Car.create!
-      event = transaction.record(ActiveAuditing::CreateEvent, source)
+      event = transaction.record(CIA::CreateEvent, source)
 
       parse_event_changes(event).should == []
     end

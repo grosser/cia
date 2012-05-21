@@ -1,7 +1,7 @@
 PATH
-  remote: /Users/mgrosser/code/tools/active_auditing
+  remote: /Users/mgrosser/code/tools/cia
   specs:
-    active_auditing (0.0.0)
+    cia (0.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -28,9 +28,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_auditing!
   activerecord (= 2.3.14)
   appraisal
+  cia!
   rake
   rspec (~> 2)
   sqlite3

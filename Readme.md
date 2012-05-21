@@ -1,3 +1,5 @@
+# Central Intelligent Auditing
+
 Audit model events like update/create/delete + attribute changes.<br/>
  - very normalized and queryable through table layout
 ```
@@ -15,7 +17,7 @@ Install
     gem install active_auditing
 Or
 
-    rails plugin install git://github.com/grosser/active_auditing.git
+    rails plugin install git://github.com/grosser/cia.git
 
 
 Usage
@@ -45,4 +47,4 @@ Author
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
-[![Build Status](https://secure.travis-ci.org/grosser/active_auditing.png)](http://travis-ci.org/grosser/active_auditing)
+[![Build Status](https://secure.travis-ci.org/grosser/cia.png)](http://travis-ci.org/grosser/cia)

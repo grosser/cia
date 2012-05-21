@@ -1,4 +1,4 @@
-module ActiveAuditing
+module CIA
   class AttributeChange < ActiveRecord::Base
     self.table_name = "audit_attribute_changes"
 

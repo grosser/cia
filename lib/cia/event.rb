@@ -1,4 +1,4 @@
-module ActiveAuditing
+module CIA
   class Event < ActiveRecord::Base
     abstract_class
     self.table_name = "audit_events"
