@@ -23,6 +23,8 @@ Or
 
     rails plugin install git://github.com/grosser/cia.git
 
+`rails g migration add_cia` + paste [Migration](https://raw.github.com/grosser/cia/master/Readme.md)
+
 
 Usage
 =====
