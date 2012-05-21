@@ -10,6 +10,10 @@ require 'cia/delete_event'
 require 'cia/attribute_change'
 
 module CIA
+  class << self
+    attr_accessor :exception_handler
+  end
+
   def self.audit(options = {})
     Thread.current[:cia_transaction] = Transaction.new(options)
     yield
@@ -24,7 +28,10 @@ module CIA
   def self.record_audit(event_type, object)
     CIA.current_transaction.record(event_type, object)
   rescue Object => e
-    Rails.logger.error("Failed to record audit: #{e}\n#{e.backtrace}")
-    raise e unless Rails.env.production?
+    if exception_handler
+      exception_handler.call e
+    else
+      raise e
+    end
   end
 end

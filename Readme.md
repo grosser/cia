@@ -49,6 +49,9 @@ end
 User.last.cia_events
 changes = User.last.cia_attribute_changes
 last_passwords = changes.where(:attribute_name => "crypted_password").map(&:new_value)
+
+# exceptions (raised by default)
+CIA.exception_handler = lambda{|e| raise e unless Rails.env.production? }
 ```
 
 

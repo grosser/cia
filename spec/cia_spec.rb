@@ -49,11 +49,6 @@ describe CIA do
       end
     end
 
-    before do
-      Rails.stub(:logger).and_return(mock(:error => ""))
-      Rails.env.stub(:production?).and_return(true)
-    end
-
     it "tracks create" do
       expect{
         object.save!
@@ -77,29 +72,39 @@ describe CIA do
       CIA::Event.last.class.should == CIA::UpdateEvent
     end
 
-    context "exceptions" do
+    context "exception_handler" do
       before do
-        Rails.stub(:logger).and_return(mock(:error => ""))
-        Rails.env.stub(:production?).and_return(true)
+        $stderr.stub(:puts)
         transaction.stub(:record).and_raise(StandardError.new("foo"))
       end
 
-      it "logs exceptions raised by the transaction" do
-        Rails.logger.should_receive(:error).with { |x| x =~ /Failed to record audit: foo/ }
-        object.save! rescue nil
+      def capture_exception
+        begin
+          old = CIA.exception_handler
+          ex = nil
+          CIA.exception_handler = lambda{|e| ex = e }
+          yield
+          ex
+        rescue
+          CIA.exception_handler = old
+        end
       end
 
-      it "re-raise exceptions when not in production" do
-        Rails.env.stub(:production?).and_return(false)
-
-        expect {
+      it "raises exceptions by the transaction" do
+        ex = nil
+        begin
           object.save!
-        }.to raise_error(StandardError)
+        rescue Object => e
+          ex = e
+        end
+        ex.inspect.should == '#<StandardError: foo>'
       end
 
-      it "does not re-raise exceptions when in production" do
-        Rails.env.stub(:production?).and_return(true)
-        object.save!
+      it "can capture exception via handler" do
+        ex = capture_exception do
+          object.save!
+        end
+        ex.inspect.should == '#<StandardError: foo>'
       end
     end
   end

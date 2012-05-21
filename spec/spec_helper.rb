@@ -7,7 +7,7 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Schema.define(:version => 1) do
-  eval(File.read('MIGRATION.rb'))
+  eval(File.read(File.expand_path('../../MIGRATION.rb', __FILE__)))
 
   create_table :cars do |t|
     t.integer :wheels
@@ -58,14 +58,4 @@ end
 def create_change
   event = create_event
   CIA::AttributeChange.create!(:event => event, :source => event.source, :attribute_name => "bar")
-end
-
-module Rails
-  def self.logger
-    raise "NOT STUBBED"
-  end
-
-  def self.env
-    @@env ||= "NOT STUBBED"
-  end
 end
