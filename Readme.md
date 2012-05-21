@@ -46,8 +46,8 @@ class ApplicationController < ActionController::Base
 end
 
 # quick access
-User.last.audit_events
-changes = User.last.audit_attribute_changes
+User.last.cia_events
+changes = User.last.cia_attribute_changes
 last_passwords = changes.where(:attribute_name => "crypted_password").map(&:new_value)
 ```
 

@@ -1,8 +1,8 @@
 module CIA
   class AttributeChange < ActiveRecord::Base
-    self.table_name = "audit_attribute_changes"
+    self.table_name = "cia_attribute_changes"
 
-    belongs_to :event, :foreign_key => "audit_event_id"
+    belongs_to :event, :foreign_key => "cia_event_id"
     belongs_to :source, :polymorphic => true
 
     validates_presence_of :event, :attribute_name, :source

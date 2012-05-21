@@ -1,9 +1,9 @@
 module CIA
   class Transaction < ActiveRecord::Base
-    self.table_name = "audit_transactions"
+    self.table_name = "cia_transactions"
 
     belongs_to :actor, :polymorphic => true
-    has_many :events, :foreign_key => :audit_transaction_id
+    has_many :events, :foreign_key => :cia_transaction_id
 
     def record(event_type, source)
       changes = source.changes.slice(*source.class.audited_attributes)

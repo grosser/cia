@@ -13,8 +13,8 @@ module CIA
         self.audited_attributes = Set.new unless audited_attributes
         self.audited_attributes += attributes.map(&:to_s)
 
-        has_many :audit_events, :class_name => "CIA::Event", :as => :source
-        has_many :audit_attribute_changes, :class_name => "CIA::AttributeChange", :as => :source
+        has_many :cia_events, :class_name => "CIA::Event", :as => :source
+        has_many :cia_attribute_changes, :class_name => "CIA::AttributeChange", :as => :source
       end
     end
   end

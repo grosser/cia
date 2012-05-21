@@ -11,14 +11,14 @@ require 'cia/attribute_change'
 
 module CIA
   def self.audit(options = {})
-    Thread.current[:audit_transaction] = Transaction.new(options)
+    Thread.current[:cia_transaction] = Transaction.new(options)
     yield
   ensure
-    Thread.current[:audit_transaction] = nil
+    Thread.current[:cia_transaction] = nil
   end
 
   def self.current_transaction
-    Thread.current[:audit_transaction] || NullTransaction
+    Thread.current[:cia_transaction] || NullTransaction
   end
 
   def self.record_audit(event_type, object)
