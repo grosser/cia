@@ -5,10 +5,10 @@ Audit model events like update/create/delete + attribute changes.<br/>
  -> has many events (updated subject + message)
    -> has many attribute changes (changed password from foo to bar on subject)
 ```
-
  - actors and subjects are polymorphic
  - events come in different types like `ActiveAuditing::UpdateEvent`
  - transactions wrap multiple events, a nice place to add debugging info like source/action/ip
+ - works on ActiveRecord 2 and 3
 
 Install
 =======
