@@ -2,7 +2,6 @@ require 'active_record'
 require 'active_auditing/version'
 require 'active_auditing/auditable'
 require 'active_auditing/null_transaction'
-require 'active_auditing/audit_observer'
 
 require 'active_auditing/transaction'
 require 'active_auditing/event'
@@ -21,5 +20,12 @@ module ActiveAuditing
 
   def self.current_transaction
     Thread.current[:audit_transaction] || NullTransaction
+  end
+
+  def self.record_audit(event_type, object)
+    ActiveAuditing.current_transaction.record(event_type, object)
+  rescue => e
+    Rails.logger.error("Failed to record audit: #{e}\n#{e.backtrace}")
+    raise e unless Rails.env.production?
   end
 end

@@ -38,4 +38,69 @@ describe ActiveAuditing do
       sleep 0.04 # so next tests dont fail
     end
   end
+
+  describe ".record_audit" do
+    let(:object) { Car.new }
+    let(:transaction) { ActiveAuditing.current_transaction }
+
+    around do |example|
+      ActiveAuditing.audit :actor => User.create! do
+        example.call
+      end
+    end
+
+    before do
+      Rails.stub(:logger).and_return(mock(:error => ""))
+      Rails.env.stub(:production?).and_return(true)
+    end
+
+    it "tracks create" do
+      expect{
+        object.save!
+      }.to change{ ActiveAuditing::Event.count }.by(+1)
+      ActiveAuditing::Event.last.class.should == ActiveAuditing::CreateEvent
+    end
+
+    it "tracks delete" do
+      object.save!
+      expect{
+        object.destroy
+      }.to change{ ActiveAuditing::Event.count }.by(+1)
+      ActiveAuditing::Event.last.class.should == ActiveAuditing::DeleteEvent
+    end
+
+    it "tracks update" do
+      object.save!
+      expect{
+        object.update_attributes(:wheels => 3)
+      }.to change{ ActiveAuditing::Event.count }.by(+1)
+      ActiveAuditing::Event.last.class.should == ActiveAuditing::UpdateEvent
+    end
+
+    context "exceptions" do
+      before do
+        Rails.stub(:logger).and_return(mock(:error => ""))
+        Rails.env.stub(:production?).and_return(true)
+        transaction.stub(:record).and_raise(StandardError.new("foo"))
+      end
+
+      it "logs exceptions raised by the transaction" do
+        Rails.logger.should_receive(:error).with { |x| x =~ /Failed to record audit: foo/ }
+        object.save! rescue nil
+      end
+
+      it "re-raise exceptions when not in production" do
+        Rails.env.stub(:production?).and_return(false)
+
+        expect {
+          object.save!
+        }.to raise_error(StandardError)
+      end
+
+      it "does not re-raise exceptions when in production" do
+        Rails.env.stub(:production?).and_return(true)
+        object.save!
+      end
+    end
+  end
 end
