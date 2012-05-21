@@ -1,13 +1,13 @@
-Audit model events like update/create/delete via an observer + attribute changes + all events grouped by a transaction.
-
+Audit model events like update/create/delete + attribute changes.<br/>
+ - very normalized and queryable through table layout
 ```
-Transaction (actor/ip/time/...)
- -> Event (updated subject + message)
-   -> Change (changed password from foo to bar on subject)
+1 Transaction (actor/ip/time/...)
+ -> has many events (updated subject + message)
+   -> has many attribute changes (changed password from foo to bar on subject)
 ```
 
  - actors and subjects are polymorphic
- - events come in different types like ActiveAuditing::UpdateEvent
+ - events come in different types like `ActiveAuditing::UpdateEvent`
  - transactions wrap multiple events, a nice place to add debugging info like source/action/ip
 
 Install
