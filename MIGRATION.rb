@@ -1,6 +1,6 @@
 create_table :cia_transactions do |t|
-  t.integer :actor_id, :null => false
-  t.string :actor_type, :null => false
+  t.integer :actor_id
+  t.string :actor_type
   t.string :ip_address
   t.timestamp :created_at
 end
