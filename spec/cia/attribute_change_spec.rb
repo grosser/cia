@@ -10,6 +10,7 @@ describe CIA::AttributeChange do
 
   describe ".previous" do
     it "finds by id desc" do
+      CIA::AttributeChange.delete_all
       a = create_change
       b = create_change
       CIA::AttributeChange.previous.should == [b,a]
