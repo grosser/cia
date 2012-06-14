@@ -14,5 +14,9 @@ module CIA
     end
 
     delegate :created_at, :to => :event
+
+    def self.on_attribute(attribute)
+      scoped(:conditions => {:attribute_name => attribute})
+    end
   end
 end

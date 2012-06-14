@@ -55,7 +55,7 @@ def create_event
   CIA::UpdateEvent.create!(:source => Car.create!, :transaction => transaction)
 end
 
-def create_change
+def create_change(options={})
   event = create_event
-  CIA::AttributeChange.create!(:event => event, :source => event.source, :attribute_name => "bar")
+  CIA::AttributeChange.create!({:event => event, :source => event.source, :attribute_name => "bar"}.merge(options))
 end

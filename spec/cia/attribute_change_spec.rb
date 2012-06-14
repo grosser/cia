@@ -16,4 +16,12 @@ describe CIA::AttributeChange do
       CIA::AttributeChange.previous.should == [b,a]
     end
   end
+
+  describe ".on_attribute" do
+    it "finds with attribute" do
+      a = create_change :attribute_name => :xxx
+      b = create_change :attribute_name => :yyy
+      CIA::AttributeChange.on_attribute(:xxx).all.should == [a]
+    end
+  end
 end
