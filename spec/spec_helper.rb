@@ -1,6 +1,14 @@
 $LOAD_PATH.unshift 'lib'
 require 'cia'
 
+RSpec.configure do |config|
+  config.before do
+    CIA::Transaction.delete_all
+    CIA::Event.delete_all
+    CIA::AttributeChange.delete_all
+  end
+end
+
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
   :database => ":memory:"
@@ -56,6 +64,6 @@ def create_event
 end
 
 def create_change(options={})
-  event = create_event
+  event = options.delete(:event) || create_event
   CIA::AttributeChange.create!({:event => event, :source => event.source, :attribute_name => "bar"}.merge(options))
 end
