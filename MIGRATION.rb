@@ -1,15 +1,11 @@
-create_table :cia_transactions do |t|
+create_table :cia_events do |t|
   t.integer :actor_id
   t.string :actor_type
+  t.string :source_type, :action, :null => false
+  t.integer :source_id, :null => false
   t.string :ip_address
-  t.timestamp :created_at
-end
-
-create_table :cia_events do |t|
-  t.string :type, :source_type, :null => false
-  t.integer :cia_transaction_id, :source_id, :null => false
   t.string :message
-  t.timestamp :created_at
+  t.timestamp :created_at#, :null => false
 end
 
 create_table :cia_attribute_changes do |t|
@@ -19,6 +15,5 @@ create_table :cia_attribute_changes do |t|
 end
 
 # DOWN
-# drop_table :cia_transactions
 # drop_table :cia_events
 # drop_table :cia_attribute_changes

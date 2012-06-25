@@ -3,9 +3,9 @@ module CIA
     def self.included(base)
       base.class_attribute :audited_attributes
       base.send :extend, ClassMethods
-      base.after_create {|record| CIA.record_audit(CIA::CreateEvent, record) }
-      base.after_update {|record| CIA.record_audit(CIA::UpdateEvent, record) }
-      base.after_destroy {|record| CIA.record_audit(CIA::DeleteEvent, record) }
+      base.after_create {|record| CIA.record(:create, record) }
+      base.after_update {|record| CIA.record(:update, record) }
+      base.after_destroy {|record| CIA.record(:destroy, record) }
     end
 
     module ClassMethods

@@ -1,13 +1,12 @@
 module CIA
   class Event < ActiveRecord::Base
-    abstract_class
     self.table_name = "cia_events"
 
+    belongs_to :actor, :polymorphic => true
     belongs_to :source, :polymorphic => true
-    belongs_to :transaction, :foreign_key => :cia_transaction_id
     has_many :attribute_changes, :foreign_key => :cia_event_id
 
-    validates_presence_of :transaction, :source, :type
+    validates_presence_of :source, :action
 
     def self.previous
       scoped(:order => "id desc")

@@ -3,7 +3,6 @@ require 'cia'
 
 RSpec.configure do |config|
   config.before do
-    CIA::Transaction.delete_all
     CIA::Event.delete_all
     CIA::AttributeChange.delete_all
   end
@@ -50,17 +49,8 @@ class CarWith3Attributes < ActiveRecord::Base
   audit_attribute :drivers
 end
 
-class CarWithoutObservers < ActiveRecord::Base
-  self.table_name = "cars"
-end
-
-class CarWithoutObservers2 < ActiveRecord::Base
-  self.table_name = "cars"
-end
-
 def create_event
-  transaction = CIA::Transaction.create!(:actor => User.create!)
-  CIA::UpdateEvent.create!(:source => Car.create!, :transaction => transaction)
+  CIA::Event.create!(:source => Car.create!, :actor => User.create!, :action => "update")
 end
 
 def create_change(options={})

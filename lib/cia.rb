@@ -1,12 +1,7 @@
 require 'active_record'
 require 'cia/version'
 require 'cia/auditable'
-require 'cia/null_transaction'
-require 'cia/transaction'
 require 'cia/event'
-require 'cia/create_event'
-require 'cia/update_event'
-require 'cia/delete_event'
 require 'cia/attribute_change'
 
 module CIA
@@ -15,18 +10,31 @@ module CIA
   end
 
   def self.audit(options = {})
-    Thread.current[:cia_transaction] = Transaction.new(options)
+    Thread.current[:cia_transaction] = options
     yield
   ensure
     Thread.current[:cia_transaction] = nil
   end
 
   def self.current_transaction
-    Thread.current[:cia_transaction] || NullTransaction
+    Thread.current[:cia_transaction]
   end
 
-  def self.record_audit(event_type, object)
-    CIA.current_transaction.record(event_type, object)
+  def self.record(action, source)
+    return unless current_transaction
+
+    changes = source.changes.slice(*source.class.audited_attributes)
+    message = source.audit_message if source.respond_to?(:audit_message)
+
+    return if not message and changes.empty? and action.to_s == "update"
+
+    event = CIA::Event.create!(
+      :action => action.to_s,
+      :source => source,
+      :message => message
+    )
+    event.record_attribute_changes!(changes)
+    event
   rescue Object => e
     if exception_handler
       exception_handler.call e
