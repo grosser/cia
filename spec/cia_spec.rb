@@ -37,6 +37,19 @@ describe CIA do
       CIA.current_transaction.should == nil
       sleep 0.04 # so next tests dont fail
     end
+
+    it "can stack" do
+      states = []
+      CIA.audit(:a => 1) do
+        states << CIA.current_transaction
+        CIA.audit(:b => 1) do
+          states << CIA.current_transaction
+        end
+        states << CIA.current_transaction
+      end
+      states << CIA.current_transaction
+      states.should == [{:a => 1}, {:b => 1}, {:a => 1}, nil]
+    end
   end
 
   describe ".record" do
@@ -74,6 +87,14 @@ describe CIA do
     context "events" do
       def parse_event_changes(event)
         event.attribute_changes.map { |c| [c.attribute_name, c.old_value, c.new_value] }
+      end
+
+      it "records attributes in transaction" do
+        event = nil
+        CIA.audit :actor => User.create!, :ip_address => "1.2.3.4" do
+          event = CIA.record(:destroy, Car.create!)
+        end
+        event.ip_address.should == "1.2.3.4"
       end
 
       it "records attribute creations" do
