@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cia (0.2.3)
+    cia (0.3.0)
 
 GEM
   remote: http://rubygems.org/
