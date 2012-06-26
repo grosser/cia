@@ -84,6 +84,25 @@ describe CIA do
       CIA::Event.last.action.should == "update"
     end
 
+    context ":if" do
+      let(:object) { CarWithIf.new }
+
+      it "tracks if :if is true" do
+        expect{
+          object.bar = true
+          object.save!
+        }.to change{ CIA::Event.count }.by(+1)
+        CIA::Event.last.action.should == "create"
+      end
+
+      it "does not track if :if is false" do
+        expect{
+          object.save!
+        }.to_not change{ CIA::Event.count }
+        CIA::Event.last.should == nil
+      end
+    end
+
     context "events" do
       def parse_event_changes(event)
         event.attribute_changes.map { |c| [c.attribute_name, c.old_value, c.new_value] }

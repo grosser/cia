@@ -49,6 +49,15 @@ last_passwords = changes.where(:attribute_name => "crypted_password").map(&:new_
 
 # exceptions (raised by default)
 CIA.exception_handler = lambda{|e| raise e unless Rails.env.production? }
+
+# conditional auditing
+class User < ActiveRecord::Base
+  audited_attributes :email, :if => :interesting?
+
+  def interesting?
+    ...
+  end
+end
 ```
 
 

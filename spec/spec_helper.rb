@@ -49,6 +49,17 @@ class CarWith3Attributes < ActiveRecord::Base
   audit_attribute :drivers
 end
 
+class CarWithIf < ActiveRecord::Base
+  self.table_name = "cars"
+  include CIA::Auditable
+  audit_attribute :wheels, :if => :foo?
+  attr_accessor :bar
+
+  def foo?
+    bar
+  end
+end
+
 def create_event
   CIA::Event.create!(:source => Car.create!, :actor => User.create!, :action => "update")
 end
