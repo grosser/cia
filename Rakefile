@@ -10,7 +10,7 @@ task :fast_force_install_appraisals => "appraisal:gemfiles" do
 end
 
 task :default => :fast_force_install_appraisals do
-  sh "rake appraisal spec"
+  exec "bundle exec rake appraisal spec"
 end
 
 task :spec do
