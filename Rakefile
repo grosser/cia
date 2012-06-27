@@ -1,11 +1,19 @@
 require 'appraisal'
 require 'bundler/gem_tasks'
 
-task :default do
-  sh "bundle exec rake appraisal:install && bundle exec rake appraisal spec"
+task :fast_force_install_appraisals => "appraisal:gemfiles" do
+  Appraisal::File.each do |appraisal|
+    gemfile = appraisal.gemfile_path
+    options = "--gemfile='#{gemfile}'"
+    sh "bundle check #{options} || bundle install #{options} || (rm #{gemfile}.lock && bundle install #{options})"
+  end
 end
 
-task :spec do
+task :default => :fast_force_install_appraisals do
+  sh "bundle exec rake appraisal spec"
+end
+
+  task :spec do
   sh "rspec spec/"
 end
 
