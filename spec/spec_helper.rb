@@ -60,8 +60,8 @@ class CarWithIf < ActiveRecord::Base
   end
 end
 
-def create_event
-  CIA::Event.create!(:source => Car.create!, :actor => User.create!, :action => "update")
+def create_event(options={})
+  CIA::Event.create!({:source => Car.create!, :actor => User.create!, :action => "update"}.merge(options))
 end
 
 def create_change(options={})

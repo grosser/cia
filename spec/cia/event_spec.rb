@@ -20,7 +20,7 @@ describe CIA::Event do
 
   context ".previous" do
     it "is sorted id desc" do
-      events = [create_event, create_event, create_event].map(&:id)
+      events = [create_event(:created_at => 3.days.ago), create_event(:created_at => 2.days.ago), create_event(:created_at => 1.day.ago)].map(&:id)
       CIA::Event.previous.map(&:id).should == events.reverse
     end
   end

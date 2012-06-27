@@ -9,7 +9,7 @@ module CIA
     validates_presence_of :source, :action
 
     def self.previous
-      scoped(:order => "id desc")
+      scoped(:order => "created_at desc")
     end
 
     def attribute_change_hash
