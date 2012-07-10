@@ -1,10 +1,11 @@
 require 'active_record'
 require 'cia/version'
 require 'cia/auditable'
-require 'cia/event'
-require 'cia/attribute_change'
 
 module CIA
+  autoload 'Event', 'cia/event'
+  autoload 'AttributeChange', 'cia/attribute_change'
+
   class << self
     attr_accessor :exception_handler
   end
