@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe CIA::AttributeChange do
   it "stores times as db format" do
-    create_change(:old_value => Time.at(123456789)).reload.old_value.should == "1973-11-29 13:33:09.000000"
+    create_change(:old_value => Time.at(123456789)).reload.old_value.sub(/\.\d+$/,'').should == "1973-11-29 13:33:09"
   end
 
   it "stores dates as db format" do
