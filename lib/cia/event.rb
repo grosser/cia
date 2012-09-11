@@ -19,9 +19,10 @@ module CIA
     end
 
     # tested via transaction_test.rb
-    def record_attribute_changes!(changes)
+    def add_attribute_changes(changes)
       changes.each do |attribute_name, (old_value, new_value)|
-        attribute_changes.create!(
+        attribute_changes.build(
+          :event => self,
           :attribute_name => attribute_name,
           :old_value => old_value,
           :new_value => new_value,

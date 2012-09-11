@@ -32,12 +32,13 @@ module CIA
 
     return if not message and changes.empty? and action.to_s == "update"
 
-    event = CIA::Event.create!(current_transaction.merge(
+    event = CIA::Event.new(current_transaction.merge(
       :action => action.to_s,
       :source => source,
       :message => message
     ))
-    event.record_attribute_changes!(changes)
+    event.add_attribute_changes(changes)
+    event.save!
     event
   rescue Object => e
     if exception_handler

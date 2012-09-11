@@ -68,3 +68,13 @@ def create_change(options={})
   event = options.delete(:event) || create_event
   CIA::AttributeChange.create!({:event => event, :source => event.source, :attribute_name => "bar"}.merge(options))
 end
+
+# simulate a hacked cia event
+CIA::Event.class_eval do
+  before_save :hacked_before_save
+  attr_accessor :hacked_before_save_action
+
+  def hacked_before_save
+    hacked_before_save_action.call(self) if hacked_before_save_action
+  end
+end
