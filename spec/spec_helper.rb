@@ -52,12 +52,15 @@ end
 class CarWithIf < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :if => :foo?
-  attr_accessor :bar
+  audit_attribute :wheels, :if => :tested
+  attr_accessor :tested
+end
 
-  def foo?
-    bar
-  end
+class CarWithUnless < ActiveRecord::Base
+  self.table_name = "cars"
+  include CIA::Auditable
+  audit_attribute :wheels, :unless => :tested
+  attr_accessor :tested
 end
 
 def create_event(options={})

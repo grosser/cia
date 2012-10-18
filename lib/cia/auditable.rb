@@ -15,6 +15,7 @@ module CIA
         self.audited_attributes = Set.new unless audited_attributes
         self.audited_attributes += attributes.map(&:to_s)
 
+        raise "cannot have :if and :unless" if options[:if] && options[:unless]
         self.audited_attribute_options ||= {}
         self.audited_attribute_options.merge!(options)
 

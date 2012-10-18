@@ -89,7 +89,7 @@ describe CIA do
 
       it "tracks if :if is true" do
         expect{
-          object.bar = true
+          object.tested = true
           object.save!
         }.to change{ CIA::Event.count }.by(+1)
         CIA::Event.last.action.should == "create"
@@ -97,6 +97,25 @@ describe CIA do
 
       it "does not track if :if is false" do
         expect{
+          object.save!
+        }.to_not change{ CIA::Event.count }
+        CIA::Event.last.should == nil
+      end
+    end
+
+    context ":unless" do
+      let(:object) { CarWithUnless.new }
+
+      it "tracks if :unless is false" do
+        expect{
+          object.save!
+        }.to change{ CIA::Event.count }.by(+1)
+        CIA::Event.last.action.should == "create"
+      end
+
+      it "does not track if :unless is true" do
+        expect{
+          object.tested = true
           object.save!
         }.to_not change{ CIA::Event.count }
         CIA::Event.last.should == nil

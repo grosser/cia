@@ -26,6 +26,7 @@ module CIA
     return unless current_transaction
     options = source.class.audited_attribute_options
     return if options and options[:if] and not source.send(options[:if])
+    return if options and options[:unless] and source.send(options[:unless])
 
     changes = source.changes.slice(*source.class.audited_attributes)
     message = source.audit_message if source.respond_to?(:audit_message)
