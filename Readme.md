@@ -58,6 +58,9 @@ class User < ActiveRecord::Base
     ...
   end
 end
+
+# adding an actor e.g. for user creation
+CIA.current_actor = @user
 ```
 
 

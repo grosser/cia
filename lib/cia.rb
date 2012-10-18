@@ -22,6 +22,14 @@ module CIA
     Thread.current[:cia_transaction]
   end
 
+  def self.current_actor=(user)
+    current_transaction[:actor] = user if current_transaction
+  end
+
+  def self.current_actor
+    current_transaction[:actor] if current_transaction
+  end
+
   def self.record(action, source)
     return unless current_transaction
     options = source.class.audited_attribute_options

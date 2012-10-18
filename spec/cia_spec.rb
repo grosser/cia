@@ -239,4 +239,36 @@ describe CIA do
       end
     end
   end
+
+  context ".current_actor" do
+    it "is nil when nothing is set" do
+      CIA.current_actor.should == nil
+    end
+
+    it "is nil when no actor is set" do
+      CIA.audit do
+        CIA.current_actor.should == nil
+      end
+    end
+
+    it "is the current :actor" do
+      CIA.audit :actor => 111 do
+        CIA.current_actor.should == 111
+      end
+    end
+  end
+
+  context ".current_actor=" do
+    it "does nothing if no transaction is running" do
+      CIA.current_actor = 111
+      CIA.current_transaction.should == nil
+    end
+
+    it "sets when transaction is started" do
+      CIA.audit :actor => 222 do
+        CIA.current_actor = 111
+        CIA.current_transaction.should == {:actor => 111}
+      end
+    end
+  end
 end
