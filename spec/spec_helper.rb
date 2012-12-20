@@ -63,6 +63,16 @@ class CarWithUnless < ActiveRecord::Base
   attr_accessor :tested
 end
 
+class CarWithCustomChanges < ActiveRecord::Base
+  self.table_name = "cars"
+  include CIA::Auditable
+  audit_attribute :wheels, :foo
+
+  def cia_changes
+    changes.merge("foo" => ["bar", "baz"])
+  end
+end
+
 def create_event(options={})
   CIA::Event.create!({:source => Car.create!, :actor => User.create!, :action => "update"}.merge(options))
 end

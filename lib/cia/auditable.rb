@@ -8,6 +8,10 @@ module CIA
       base.after_destroy {|record| CIA.record(:destroy, record) }
     end
 
+    def cia_changes
+      changes
+    end
+
     module ClassMethods
       def audit_attribute(*attributes)
         options = (attributes.last.is_a?(Hash) ? attributes.pop : {})

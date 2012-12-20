@@ -84,6 +84,22 @@ describe CIA do
       CIA::Event.last.action.should == "update"
     end
 
+    context "custom changes" do
+      let(:object) { CarWithCustomChanges.new }
+
+      it "tracks custom changes" do
+        object.save!
+        expect{
+          object.update_attributes(:wheels => 3)
+        }.to change{ CIA::Event.count }.by(+1)
+        CIA::Event.last.action.should == "update"
+        CIA::Event.last.attribute_change_hash.should == {
+          "wheels" => [nil, "3"],
+          "foo" => ["bar", "baz"]
+        }
+      end
+    end
+
     context ":if" do
       let(:object) { CarWithIf.new }
 
