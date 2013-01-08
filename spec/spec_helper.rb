@@ -73,6 +73,19 @@ class CarWithCustomChanges < ActiveRecord::Base
   end
 end
 
+class FailCar < ActiveRecord::Base
+  self.table_name = "cars"
+  include CIA::Auditable
+  audit_attribute :wheels
+
+  class Oops < Exception
+  end
+
+  after_update { |x| raise Oops }
+  after_create { |x| raise Oops }
+  after_destroy { |x| raise Oops }
+end
+
 def create_event(options={})
   CIA::Event.create!({:source => Car.create!, :actor => User.create!, :action => "update"}.merge(options))
 end

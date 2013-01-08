@@ -84,6 +84,16 @@ describe CIA do
       CIA::Event.last.action.should == "update"
     end
 
+    it "does not track failed changes" do
+      car = Car.create!(:wheels => 1).id
+      expect{
+        expect{ FailCar.new(:wheels => 4).save  }.to raise_error(FailCar::Oops)
+        car = FailCar.find(car)
+        expect{ car.update_attributes(:wheels => 2) }.to raise_error(FailCar::Oops)
+        expect{ car.destroy }.to raise_error(FailCar::Oops)
+      }.to_not change{ CIA::Event.count }
+    end
+
     context "custom changes" do
       let(:object) { CarWithCustomChanges.new }
 
