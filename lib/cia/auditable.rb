@@ -30,7 +30,7 @@ module CIA
         [:create, :update, :destroy].each do |callback|
           method, args = if options[:callback]
             if ActiveRecord::VERSION::MAJOR == 2 && options[:callback] == :after_commit
-              ["after_commit_on_#{callback}"]
+              ["after_commit_on_#{callback}", []]
             else # rails 3+
               [options[:callback], [{:on => callback}]]
             end
