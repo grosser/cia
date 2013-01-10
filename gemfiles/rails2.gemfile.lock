@@ -9,6 +9,8 @@ GEM
     activerecord (2.3.14)
       activesupport (= 2.3.14)
     activesupport (2.3.14)
+    after_commit (1.0.10)
+      activerecord (>= 1.15.6, < 3.0.0)
     appraisal (0.4.1)
       bundler
       rake
@@ -30,6 +32,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord (= 2.3.14)
+  after_commit
   appraisal
   bump
   cia!

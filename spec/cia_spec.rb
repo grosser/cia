@@ -94,6 +94,55 @@ describe CIA do
       }.to_not change{ CIA::Event.count }
     end
 
+    it "is rolled back if auditing fails" do
+      CIA.should_receive(:record).and_raise("XXX")
+      expect{
+        expect{
+          CIA.audit{ object.save! }
+        }.to raise_error("XXX")
+      }.to_not change{ object.class.count }
+    end
+
+    context "nested classes with multiple audited_attributes" do
+      let(:object){ NestedCar.new }
+
+      it "has the exclusive sub-classes attributes of the nested class" do
+        object.class.audited_attributes.should == ["drivers"]
+      end
+
+      it "does not record twice for nested classes" do
+        expect{
+          CIA.audit{ object.save! }
+        }.to change{ CIA::Event.count }.by(+1)
+      end
+
+      it "does not record twice for super classes" do
+        expect{
+          CIA.audit{ Car.new.save! }
+        }.to change{ CIA::Event.count }.by(+1)
+      end
+    end
+
+    context "nested classes with 1 audited_attributes" do
+      let(:object){ InheritedCar.new }
+
+      it "has the super-classes attributes" do
+        object.class.audited_attributes.should == ["wheels"]
+      end
+
+      it "does not record twice for nested classes" do
+        expect{
+          CIA.audit{ object.save! }
+        }.to change{ CIA::Event.count }.by(+1)
+      end
+
+      it "does not record twice for super classes" do
+        expect{
+          CIA.audit{ Car.new.save! }
+        }.to change{ CIA::Event.count }.by(+1)
+      end
+    end
+
     context "custom changes" do
       let(:object) { CarWithCustomChanges.new }
 
@@ -262,6 +311,28 @@ describe CIA do
           object.save!
         end
         ex.inspect.should == '#<StandardError: foo>'
+      end
+    end
+
+    context "with after_commit" do
+      let(:object){ CarWithTransactions.new }
+
+      it "still tracks" do
+        expect{
+          CIA.audit{ object.save! }
+        }.to change{ CIA::Event.count }.by(+1)
+      end
+
+      it "is not rolled back if auditing fails" do
+        CIA.should_receive(:record).and_raise("XXX")
+        begin
+          expect{
+            CIA.audit{ object.save! }
+          }.to change{ object.class.count }.by(+1)
+        rescue RuntimeError => e
+          # errors from after_commit are never raised in rails 3+
+          raise e if ActiveRecord::VERSION::MAJOR != 2 || e.message != "XXX"
+        end
       end
     end
   end

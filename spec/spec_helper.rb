@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift 'lib'
 require 'cia'
+require 'after_commit' if ActiveRecord::VERSION::MAJOR == 2
 
 RSpec.configure do |config|
   config.before do
@@ -45,8 +46,7 @@ end
 class CarWith3Attributes < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :color
-  audit_attribute :drivers
+  audit_attribute :wheels, :color, :drivers
 end
 
 class CarWithIf < ActiveRecord::Base
@@ -84,6 +84,19 @@ class FailCar < ActiveRecord::Base
   after_update { |x| raise Oops }
   after_create { |x| raise Oops }
   after_destroy { |x| raise Oops }
+end
+
+class CarWithTransactions < ActiveRecord::Base
+  self.table_name = "cars"
+  include CIA::Auditable
+  audit_attribute :wheels, :callback => :after_commit
+end
+
+class NestedCar < Car
+  audit_attribute :drivers
+end
+
+class InheritedCar < Car
 end
 
 def create_event(options={})
