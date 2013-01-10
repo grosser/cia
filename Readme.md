@@ -63,11 +63,16 @@ end
 CIA.current_actor = @user
 
 # custom changes
-
 class User < ActiveRecord::Base
   def cia_changes
     changes.merge("this" => ["always", "changes"])
   end
+end
+
+# using after_commit, useful if the CIA::Event is stored in a different database then the audited class
+class User < ActiveRecord::Base
+  include CIA::Auditable
+  audited_attributes :email, :crypted_password, :callback => :after_commit
 end
 ```
 

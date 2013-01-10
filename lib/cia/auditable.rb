@@ -28,11 +28,11 @@ module CIA
         self.audited_attributes_callbacks_added = true
 
         [:create, :update, :destroy].each do |callback|
-          method, args = if options[:callback] == :after_commit
-            if ActiveRecord::VERSION::MAJOR == 2
+          method, args = if options[:callback]
+            if ActiveRecord::VERSION::MAJOR == 2 && options[:callback] == :after_commit
               ["after_commit_on_#{callback}"]
             else # rails 3+
-              [:after_commit, [{:on => callback}]]
+              [options[:callback], [{:on => callback}]]
             end
           else
             ["after_#{callback}", []]
