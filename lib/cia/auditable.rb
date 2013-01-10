@@ -9,6 +9,15 @@ module CIA
       changes
     end
 
+    def stored_cia_changes(changes=nil)
+      if changes
+        @stored_cia_changes = changes
+      else
+        old, @stored_cia_changes = @stored_cia_changes, nil
+        old
+      end
+    end
+
     module ClassMethods
       def audit_attribute(*attributes)
         options = (attributes.last.is_a?(Hash) ? attributes.pop : {})
@@ -28,11 +37,12 @@ module CIA
         self.audited_attributes_callbacks_added = true
 
         [:create, :update, :destroy].each do |callback|
-          method, args = if options[:callback]
-            if ActiveRecord::VERSION::MAJOR == 2 && options[:callback] == :after_commit
+          method, args = if options[:callback] == :after_commit
+            send("after_#{callback}"){ |record| record.stored_cia_changes(record.cia_changes) }
+            if ActiveRecord::VERSION::MAJOR == 2
               ["after_commit_on_#{callback}", []]
             else # rails 3+
-              [options[:callback], [{:on => callback}]]
+              [:after_commit, [{:on => callback}]]
             end
           else
             ["after_#{callback}", []]

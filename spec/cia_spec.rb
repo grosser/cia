@@ -315,12 +315,28 @@ describe CIA do
     end
 
     context "with after_commit" do
-      let(:object){ CarWithTransactions.new }
+      let(:object){ CarWithTransactions.new(:wheels => 1) }
 
       it "still tracks" do
         expect{
           CIA.audit{ object.save! }
         }.to change{ CIA::Event.count }.by(+1)
+        CIA::Event.last.attribute_change_hash.should == {"wheels" => [nil, "1"]}
+      end
+
+      it "unsets temp-changes after the save" do
+        object.save!
+
+        # does not re-track old changes
+        expect{
+          CIA.audit{ object.update_attributes(:drivers => 2) }
+        }.to change{ CIA::Event.count }.by(+1)
+        CIA::Event.last.attribute_change_hash.should == {"drivers" => [nil, "2"]}
+
+        # empty changes
+        expect{
+          CIA.audit{ object.update_attributes(:drivers => 2) }
+        }.to_not change{ CIA::Event.count }
       end
 
       it "is not rolled back if auditing fails" do

@@ -89,7 +89,7 @@ end
 class CarWithTransactions < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :callback => :after_commit
+  audit_attribute :wheels, :drivers, :callback => :after_commit
 end
 
 class NestedCar < Car
