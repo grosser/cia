@@ -76,6 +76,8 @@ class User < ActiveRecord::Base
 end
 ```
 
+# TODO
+ - reuse AR3+ previous_changes in a nice way
 
 Author
 ======

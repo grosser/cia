@@ -36,7 +36,7 @@ module CIA
     return if options and options[:if] and not source.send(options[:if])
     return if options and options[:unless] and source.send(options[:unless])
 
-    changes = (source.stored_cia_changes || source.cia_changes).slice(*source.class.audited_attributes)
+    changes = (source.cia_previous_changes || source.cia_changes).slice(*source.class.audited_attributes)
     message = source.audit_message if source.respond_to?(:audit_message)
 
     return if not message and changes.empty? and action.to_s == "update"

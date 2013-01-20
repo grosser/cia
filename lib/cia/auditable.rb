@@ -9,11 +9,11 @@ module CIA
       changes
     end
 
-    def stored_cia_changes(changes=nil)
+    def cia_previous_changes(changes=nil)
       if changes
-        @stored_cia_changes = changes
+        @cia_previous_changes = changes
       else
-        old, @stored_cia_changes = @stored_cia_changes, nil
+        old, @cia_previous_changes = @cia_previous_changes, nil
         old
       end
     end
@@ -38,7 +38,7 @@ module CIA
 
         [:create, :update, :destroy].each do |callback|
           method, args = if options[:callback] == :after_commit
-            send("after_#{callback}"){ |record| record.stored_cia_changes(record.cia_changes) }
+            send("after_#{callback}"){ |record| record.cia_previous_changes(record.cia_changes) }
             if ActiveRecord::VERSION::MAJOR == 2
               ["after_commit_on_#{callback}", []]
             else # rails 3+
