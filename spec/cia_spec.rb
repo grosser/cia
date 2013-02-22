@@ -103,6 +103,15 @@ describe CIA do
       }.to_not change{ object.class.count }
     end
 
+    it "is ok with non-attribute methods passed into .audit if they are set as non-recordable" do
+      CIA.non_recordable_attributes = [:foo]
+      expect {
+        CIA.audit(:actor => User.create!, :foo => 'bar') {
+          object.save!
+        }
+      }.to change{ CIA::Event.count }.by(+1)
+    end
+
     context "nested classes with multiple audited_attributes" do
       let(:object){ NestedCar.new }
 
