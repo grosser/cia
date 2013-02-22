@@ -8,6 +8,7 @@ module CIA
 
   class << self
     attr_accessor :exception_handler
+    attr_accessor :non_recordable_attributes
   end
 
   def self.audit(options = {})
@@ -41,7 +42,10 @@ module CIA
 
     return if not message and changes.empty? and action.to_s == "update"
 
-    event = CIA::Event.new(current_transaction.merge(
+    transaction_attributes = current_transaction.dup
+    transaction_attributes.reject! { |k, v| non_recordable_attributes.include?(k) } if non_recordable_attributes
+
+    event = CIA::Event.new(transaction_attributes.merge(
       :action => action.to_s,
       :source => source,
       :message => message

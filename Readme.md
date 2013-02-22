@@ -74,7 +74,16 @@ class User < ActiveRecord::Base
   include CIA::Auditable
   audited_attributes :email, :crypted_password, :callback => :after_commit
 end
+
+# passing arbitrary attributes into the .audit method
+CIA.non_recordable_attributes = [:my_pretty_audit_property]
+CIA.audit(:actor => current_user, :my_pretty_audit_property => "12345") do
+  ...
+end
+
+
 ```
+
 
 # TODO
  - reuse AR3+ previous_changes in a nice way
