@@ -6,6 +6,7 @@ RSpec.configure do |config|
   config.before do
     CIA::Event.delete_all
     CIA::AttributeChange.delete_all
+    CIA.non_recordable_attributes = nil
   end
 end
 
