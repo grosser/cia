@@ -6,7 +6,9 @@ module CIA
     belongs_to :source, :polymorphic => true
     has_many :attribute_changes, :foreign_key => :cia_event_id
 
-    validates_presence_of :source, :action
+    validates_presence_of :action
+    validates_presence_of :source, :if => :source_must_be_exist?
+    validates_presence_of :source_id, :source_type, :unless => :source_must_be_exist?
 
     def self.previous
       scoped(:order => "created_at desc")
@@ -29,6 +31,12 @@ module CIA
           :source => source
         )
       end
+    end
+
+    private
+
+    def source_must_be_exist?
+      new_record? and action != "destroy"
     end
   end
 end

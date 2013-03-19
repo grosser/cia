@@ -24,4 +24,22 @@ describe CIA::Event do
       CIA::Event.previous.map(&:id).should == events.reverse
     end
   end
+
+  context "validations" do
+    let(:source_attributes){ {:source => nil, :source_id => 99999, :source_type => "Car"} }
+
+    it "validates source" do
+      expect{
+        create_event(source_attributes)
+      }.to raise_error
+    end
+
+    it "does not validates source when action is destroy" do
+      create_event(source_attributes.merge(:action => "destroy"))
+    end
+
+    it "does not validates source when updating" do
+      create_event.update_attributes!(:source_id => 9999)
+    end
+  end
 end
