@@ -15,6 +15,7 @@ ActiveRecord::Base.establish_connection(
   :database => ":memory:"
 )
 
+ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
   eval(File.read(File.expand_path('../../MIGRATION.rb', __FILE__)))
 
