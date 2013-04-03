@@ -36,7 +36,7 @@ module CIA
     private
 
     def source_must_be_exist?
-      new_record? and action != "destroy"
+      new_record? and action != "destroy" and (!attributes.key?("source_display_name") or source_display_name.blank?)
     end
   end
 end
