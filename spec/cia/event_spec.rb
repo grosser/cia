@@ -42,8 +42,14 @@ describe CIA::Event do
       create_event.update_attributes!(:source_id => 9999)
     end
 
-    it "does not validates source when source_display_name is not blank" do
+    it "does not validates source when source_display_name is present" do
       create_event(:source_id => -111, :source_type => 'FakeTypeHere', :source_display_name => 'abc')
+    end
+
+    it "validates source when source_display_name is blank" do
+      expect{
+        create_event(:source_id => -111, :source_type => 'FakeTypeHere', :source_display_name => '')
+      }.to raise_error
     end
   end
 end
