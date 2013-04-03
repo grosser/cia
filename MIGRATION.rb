@@ -5,6 +5,7 @@ create_table :cia_events do |t|
   t.integer :source_id, :null => false
   t.string :ip_address
   t.string :message
+  t.string :source_display_name
   t.timestamp :created_at#, :null => false
 end
 
