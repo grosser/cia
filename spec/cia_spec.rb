@@ -211,6 +211,15 @@ describe CIA do
         event.attribute_changes.map { |c| [c.attribute_name, c.old_value, c.new_value] }
       end
 
+      def no_audit_created!
+        event = nil
+        expect{
+          event = yield
+        }.to_not change{ CIA::Event.count }
+
+        event.should == nil
+      end
+
       it "records attributes in transaction" do
         event = nil
         CIA.audit :actor => User.create!, :ip_address => "1.2.3.4" do
@@ -262,12 +271,7 @@ describe CIA do
       it "does not record unaudited attribute changes" do
         source = Car.create!
         source.drivers = 2
-        event = nil
-        expect{
-          event = CIA.record(:update, source)
-        }.to_not change{ CIA::Event.count }
-
-        event.should == nil
+        no_audit_created!{ CIA.record(:update, source) }
       end
 
       it "records audit_message as message even if there are no changes" do
@@ -279,10 +283,15 @@ describe CIA do
         parse_event_changes(event).should == []
       end
 
+      it "does not record if it's empty and there are no changes" do
+        source = CarWithAMessage.create!
+        source.audit_message = "   "
+        no_audit_created!{ CIA.record(:update, source) }
+      end
+
       it "record non-updates even without changes" do
         source = Car.create!
         event = CIA.record(:create, source)
-
         parse_event_changes(event).should == []
       end
     end
