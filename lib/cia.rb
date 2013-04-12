@@ -3,8 +3,9 @@ require 'cia/version'
 require 'cia/auditable'
 
 module CIA
-  autoload 'Event', 'cia/event'
-  autoload 'AttributeChange', 'cia/attribute_change'
+  autoload :Event, 'cia/event'
+  autoload :AttributeChange, 'cia/attribute_change'
+  autoload :MissingType, 'cia/missing_type'
 
   class << self
     attr_accessor :exception_handler
@@ -59,5 +60,9 @@ module CIA
     else
       raise e
     end
+  end
+
+  def self.missing_type(name)
+
   end
 end

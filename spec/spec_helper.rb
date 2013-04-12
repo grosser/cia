@@ -101,6 +101,10 @@ end
 class InheritedCar < Car
 end
 
+CIA.missing_type "WhereIsItNow"
+
+Object.const_set(:WhereIsItNow, Class.new(CIA::MissingType))
+
 def create_event(options={})
   CIA::Event.create!({:source => Car.create!, :actor => User.create!, :action => "update"}.merge(options))
 end

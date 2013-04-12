@@ -25,6 +25,20 @@ describe CIA::Event do
     end
   end
 
+  context "with missing source_type" do
+    before do
+      CIA::Event.create!(:source_type => "WhereIsItNow", :source_id => 123, :source_display_name => "Bbb", :action => "create")
+    end
+
+    it "can use :include" do
+      CIA::Event.all(:include => :source).map(&:source).should == [nil]
+    end
+
+    it "can use .source" do
+      CIA::Event.last.source.should == nil
+    end
+  end
+
   context "validations" do
     let(:source_attributes){ {:source => nil, :source_id => 99999, :source_type => "Car"} }
 
