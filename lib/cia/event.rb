@@ -33,8 +33,6 @@ module CIA
       end
     end
 
-    private
-
     def source_must_be_present?
       new_record? and action != "destroy" and (!attributes.key?("source_display_name") or source_display_name.blank?)
     end
