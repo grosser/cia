@@ -1,5 +1,6 @@
 module CIA
   class Event < ActiveRecord::Base
+    include SourceValidation
     self.table_name = "cia_events"
 
     belongs_to :actor, :polymorphic => true
@@ -7,8 +8,6 @@ module CIA
     has_many :attribute_changes, :foreign_key => :cia_event_id
 
     validates_presence_of :action
-    validates_presence_of :source, :if => :source_must_be_exist?
-    validates_presence_of :source_id, :source_type, :unless => :source_must_be_exist?
 
     def self.previous
       scoped(:order => "created_at desc")
@@ -33,9 +32,7 @@ module CIA
       end
     end
 
-    private
-
-    def source_must_be_exist?
+    def source_must_be_present?
       new_record? and action != "destroy" and (!attributes.key?("source_display_name") or source_display_name.blank?)
     end
   end
