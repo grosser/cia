@@ -1,4 +1,3 @@
-$LOAD_PATH.unshift 'lib'
 require 'cia'
 require 'after_commit' if ActiveRecord::VERSION::MAJOR == 2
 

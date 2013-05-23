@@ -1,7 +1,7 @@
 PATH
   remote: /Users/mgrosser/code/tools/cia
   specs:
-    cia (0.5.1)
+    cia (0.5.2)
 
 GEM
   remote: https://rubygems.org/
