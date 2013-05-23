@@ -45,7 +45,7 @@ describe CIA::AttributeChange do
 
   describe "enforcing presence of source" do
     it "requires a source when associated event requires a source" do
-      event = CIA::Event.new(:id => 1)
+      event = CIA::Event.new { |event| event.id = 1 }
       event.stub(:source_must_be_present? => true)
       change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness')
 
@@ -54,7 +54,7 @@ describe CIA::AttributeChange do
     end
 
     it "does not require a source when associated event does not" do
-      event = CIA::Event.new(:id => 1)
+      event = CIA::Event.new { |event| event.id = 1 }
       event.stub(:source_must_be_present? => false)
       change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness',
                                         :source_type => 'ObscureType', :source_id => 101)

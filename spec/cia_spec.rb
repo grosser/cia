@@ -309,7 +309,7 @@ describe CIA do
           CIA.exception_handler = lambda{|e| ex = e }
           yield
           ex
-        rescue
+        ensure
           CIA.exception_handler = old
         end
       end
