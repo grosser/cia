@@ -5,6 +5,7 @@ require 'cia/auditable'
 module CIA
   autoload 'Event', 'cia/event'
   autoload 'AttributeChange', 'cia/attribute_change'
+  autoload 'SourceValidation', 'cia/source_validation'
 
   class << self
     attr_accessor :exception_handler
