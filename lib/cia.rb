@@ -4,6 +4,7 @@ require 'cia/auditable'
 
 module CIA
   autoload 'Event', 'cia/event'
+  autoload 'FakeActiveRecord', 'cia/fake_active_record'
   autoload 'AttributeChange', 'cia/attribute_change'
 
   class << self

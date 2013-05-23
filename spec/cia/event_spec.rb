@@ -52,4 +52,64 @@ describe CIA::Event do
       }.to raise_error
     end
   end
+
+  context "source_type" do
+    context "with no source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => car, :source_id => car.id, :source_type => "Car"} }
+      it "should return source type in db" do
+        event = create_event(source_attributes)
+        event.source_type.should == 'Car'
+      end
+    end
+
+    context "with source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => nil, :source_id => car.id, :source_type => "Car", :source_display_name => 'abc'} }
+      it "should return virtual source type in db" do
+        event = create_event(source_attributes)
+        event.source_type.should == 'CIA::VirtualSourceType::Car'
+      end
+    end
+  end
+
+  context "real_source_type" do
+    context "with no source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => car, :source_id => car.id, :source_type => "Car"} }
+      it "should return source type in db" do
+        event = create_event(source_attributes)
+        event.real_source_type.should == 'Car'
+      end
+    end
+
+    context "with source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => nil, :source_id => car.id, :source_type => "Car", :source_display_name => 'abc'} }
+      it "should return virtual source type in db" do
+        event = create_event(source_attributes)
+        event.real_source_type.should == 'Car'
+      end
+    end
+  end
+
+  context "virtual_source_type" do
+    context "with no source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => car, :source_id => car.id, :source_type => "Car"} }
+      it "should return virtual source type in db" do
+        event = create_event(source_attributes)
+        event.virtual_source_type.should == 'CIA::VirtualSourceType::Car'
+      end
+    end
+
+    context "with source_display_name" do
+      let(:car) { Car.create! }
+      let(:source_attributes) { {:source => nil, :source_id => car.id, :source_type => "Car", :source_display_name => 'abc'} }
+      it "should return virtual source type in db" do
+        event = create_event(source_attributes)
+        event.virtual_source_type.should == 'CIA::VirtualSourceType::Car'
+      end
+    end
+  end
 end
