@@ -56,7 +56,8 @@ describe CIA::AttributeChange do
     it "does not require a source when associated event does not" do
       event = CIA::Event.new(:id => 1)
       event.stub(:source_must_be_present? => false)
-      change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness')
+      change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness',
+                                        :source_type => 'ObscureType', :source_id => 101)
 
       change.valid?.should be_true
     end
