@@ -81,7 +81,9 @@ CIA.audit(:actor => current_user, :my_pretty_audit_property => "12345") do
   ...
 end
 
-
+# storing complex objects in old/new and reducing it's size if it's to big (serialized via json)
+value = CIA::AttributeChange.serialize_for_storage(["some", "complex"*1000, "object"]){|too_big| too_big.delete_at(1); too_big }
+CIA::AttributeChange.create!(:old_value => value)
 ```
 
 

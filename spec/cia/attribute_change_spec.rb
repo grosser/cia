@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'spec_helper'
 
 describe CIA::AttributeChange do
@@ -60,6 +61,40 @@ describe CIA::AttributeChange do
                                         :source_type => 'ObscureType', :source_id => 101)
 
       change.valid?.should be_true
+    end
+  end
+
+  describe ".max_value_size" do
+    it "is the width of the old/new column" do
+      CIA::AttributeChange.max_value_size.should == 255
+    end
+  end
+
+  describe ".serialize_for_storage" do
+    it "stores as json" do
+      CIA::AttributeChange.serialize_for_storage([["xxx"]]){}.should == '[["xxx"]]'
+    end
+
+    it "calls the block to remove an item" do
+      CIA::AttributeChange.serialize_for_storage([["xxx"], ["x"*300], ["yyy"]]){ |array| array.delete_at(1); array  }.should == '[["xxx"],["yyy"]]'
+    end
+
+    it "blows up if block fails to reduce size to prevent loops" do
+      expect{
+        CIA::AttributeChange.serialize_for_storage([["xxx"], ["x"*300], ["yyy"]]){ |array| array  }
+      }.to raise_error
+    end
+
+    it "takes multibyte into account" do
+      called = false
+      CIA::AttributeChange.serialize_for_storage(["å" * 200]){ |array| called = true; "x" }
+      called.should == true
+    end
+
+    it "does not go crazy on multibytes" do
+      called = false
+      CIA::AttributeChange.serialize_for_storage(["å" * 100]){ |array| called = true; "x" }
+      called.should == false
     end
   end
 end
