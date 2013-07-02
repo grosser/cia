@@ -283,6 +283,14 @@ describe CIA do
         parse_event_changes(event).should == []
       end
 
+      it "does not record after saving with an audit_message" do
+        source = CarWithAMessage.create!
+        source.audit_message = "Foo"
+        CIA.record(:update, source)
+
+        no_audit_created!{ CIA.record(:update, source) }
+      end
+
       it "does not record if it's empty and there are no changes" do
         source = CarWithAMessage.create!
         source.audit_message = "   "
