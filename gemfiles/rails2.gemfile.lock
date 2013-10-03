@@ -1,7 +1,7 @@
 PATH
   remote: /Users/mgrosser/code/tools/cia
   specs:
-    cia (0.5.5)
+    cia (0.5.6)
       json
 
 GEM
