@@ -20,6 +20,14 @@ module CIA
     Thread.current[:cia_transaction] = old
   end
 
+  def self.amend_audit(options = {}, &block)
+    if current_transaction
+      audit(current_transaction.merge(options), &block)
+    else
+      audit(options, &block)
+    end
+  end
+
   def self.current_transaction
     Thread.current[:cia_transaction]
   end

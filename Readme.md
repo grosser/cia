@@ -84,6 +84,14 @@ end
 # storing complex objects in old/new and reducing it's size if it's to big (serialized via json)
 value = CIA::AttributeChange.serialize_for_storage(["some", "complex"*1000, "object"]){|too_big| too_big.delete_at(1); too_big }
 CIA::AttributeChange.create!(:old_value => value)
+
+# add something to current transaction or start a new audit
+CIA.audit :bar => :baz, :foo => :bang do
+  CIA.amend_audit :foo => :bar do
+    puts CIA.current_transaction
+  end
+end
+-> {:foo => :bar, :bar => :baz}
 ```
 
 

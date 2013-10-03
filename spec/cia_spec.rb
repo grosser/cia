@@ -52,6 +52,32 @@ describe CIA do
     end
   end
 
+  describe ".amend_audit" do
+    it "opens a new transaction when none exists" do
+      t = nil
+      CIA.amend_audit(:actor => 111){ t = CIA.current_transaction }
+      t.should == {:actor => 111}
+    end
+
+    it "amends a running transaction" do
+      t = nil
+      CIA.amend_audit(:actor => 222, :ip_address => 123) do
+        CIA.amend_audit(:actor => 111) { t = CIA.current_transaction }
+      end
+      t.should == {:actor => 111, :ip_address => 123}
+    end
+
+    it "returns to old state after transaction" do
+      CIA.amend_audit(:actor => 222, :ip_address => 123) do
+        CIA.amend_audit(:actor => 111) {  }
+      end
+      CIA.current_transaction.should == nil
+
+      CIA.amend_audit(:actor => 111) {  }
+      CIA.current_transaction.should == nil
+    end
+  end
+
   describe ".record" do
     let(:object) { Car.new }
 
