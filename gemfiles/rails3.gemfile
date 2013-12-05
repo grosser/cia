@@ -6,6 +6,7 @@ gem "bump"
 gem "rake"
 gem "rspec", "~>2"
 gem "appraisal"
+gem "wwtd"
 gem "sqlite3"
 gem "activerecord", "3.2.3"
 
