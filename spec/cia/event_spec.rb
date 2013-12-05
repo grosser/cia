@@ -4,6 +4,8 @@ describe CIA::Event do
   it "has many attribute_changes" do
     change = create_change
     change.event.attribute_changes.should == [change]
+    change.event.destroy
+    expect{ change.reload }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
   context "attribute_change_hash" do

@@ -5,7 +5,7 @@ module CIA
 
     belongs_to :actor, :polymorphic => true
     belongs_to :source, :polymorphic => true
-    has_many :attribute_changes, :foreign_key => :cia_event_id
+    has_many :attribute_changes, :foreign_key => :cia_event_id, :dependent => :destroy
 
     validates_presence_of :action
 
