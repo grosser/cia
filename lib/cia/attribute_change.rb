@@ -11,7 +11,7 @@ module CIA
     validates_presence_of :event, :attribute_name
 
     if ActiveRecord::VERSION::MAJOR > 2
-      scope :previous, :order => "id desc"
+      scope :previous, lambda { order("id desc") }
     else
       named_scope :previous, :order => "id desc"
     end
@@ -19,7 +19,8 @@ module CIA
     delegate :created_at, :to => :event
 
     def self.on_attribute(attribute)
-      scoped(:conditions => {:attribute_name => attribute})
+      conditions = {:attribute_name => attribute}
+      ActiveRecord::VERSION::MAJOR == 2 ? scoped(:conditions => conditions) : where(conditions)
     end
 
     def self.max_value_size

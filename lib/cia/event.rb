@@ -10,7 +10,8 @@ module CIA
     validates_presence_of :action
 
     def self.previous
-      scoped(:order => "created_at desc")
+      order = "created_at desc"
+      ActiveRecord::VERSION::MAJOR == 2 ? scoped(:order => order) : order(order)
     end
 
     def attribute_change_hash
