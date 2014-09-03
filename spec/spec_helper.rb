@@ -3,6 +3,8 @@ require 'cia'
 if ActiveRecord::VERSION::MAJOR == 2
   raise "use older ruby" if RUBY_VERSION > "1.9.3"
   require 'after_commit'
+else
+  I18n.enforce_available_locales = false
 end
 
 RSpec.configure do |config|

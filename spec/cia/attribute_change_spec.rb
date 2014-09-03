@@ -50,7 +50,7 @@ describe CIA::AttributeChange do
       event.stub(:source_must_be_present? => true)
       change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness')
 
-      change.valid?.should be_false
+      change.valid?.should == false
       change.errors.full_messages.should =~ ["Source can't be blank"]
     end
 
@@ -60,7 +60,7 @@ describe CIA::AttributeChange do
       change = CIA::AttributeChange.new(:event => event, :attribute_name => 'awesomeness',
                                         :source_type => 'ObscureType', :source_id => 101)
 
-      change.valid?.should be_true
+      change.valid?.should == true
     end
   end
 
