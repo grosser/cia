@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe CIA::AttributeChange do
   it "stores times as db format" do
-    t = Time.now
+    t = Time.now.utc
     create_change(:old_value => t).reload.old_value.sub(/\.\d+$/,'').should == t.to_s(:db)
   end
 
