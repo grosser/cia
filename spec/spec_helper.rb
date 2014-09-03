@@ -1,5 +1,9 @@
 require 'cia'
-require 'after_commit' if ActiveRecord::VERSION::MAJOR == 2
+
+if ActiveRecord::VERSION::MAJOR == 2
+  raise "use older ruby" if RUBY_VERSION > "1.9.3"
+  require 'after_commit'
+end
 
 RSpec.configure do |config|
   config.before do
