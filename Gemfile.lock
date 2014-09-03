@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cia (0.5.7)
+    cia (0.5.8)
       json
 
 GEM
