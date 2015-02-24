@@ -1,11 +1,6 @@
 require 'cia'
 
-if ActiveRecord::VERSION::MAJOR == 2
-  raise "use older ruby" if RUBY_VERSION > "1.9.3"
-  require 'after_commit'
-else
-  I18n.enforce_available_locales = false
-end
+I18n.enforce_available_locales = false
 
 RSpec.configure do |config|
   config.before do
@@ -16,12 +11,12 @@ RSpec.configure do |config|
 end
 
 ActiveRecord::Base.establish_connection(
-  :adapter => "sqlite3",
-  :database => ":memory:"
+  adapter: "sqlite3",
+  database: ":memory:"
 )
 
 ActiveRecord::Schema.verbose = false
-ActiveRecord::Schema.define(:version => 1) do
+ActiveRecord::Schema.define(version: 1) do
   eval(File.read(File.expand_path('../../MIGRATION.rb', __FILE__)))
 
   create_table :cars do |t|
@@ -59,14 +54,14 @@ end
 class CarWithIf < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :if => :tested
+  audit_attribute :wheels, if: :tested
   attr_accessor :tested
 end
 
 class CarWithUnless < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :unless => :tested
+  audit_attribute :wheels, unless: :tested
   attr_accessor :tested
 end
 
@@ -96,7 +91,7 @@ end
 class CarWithTransactions < ActiveRecord::Base
   self.table_name = "cars"
   include CIA::Auditable
-  audit_attribute :wheels, :drivers, :callback => :after_commit
+  audit_attribute :wheels, :drivers, callback: :after_commit
 end
 
 class NestedCar < Car
@@ -107,12 +102,12 @@ class InheritedCar < Car
 end
 
 def create_event(options={})
-  CIA::Event.create!({:source => Car.create!, :actor => User.create!, :action => "update"}.merge(options))
+  CIA::Event.create!({source: Car.create!, actor: User.create!, action: "update"}.merge(options))
 end
 
 def create_change(options={})
   event = options.delete(:event) || create_event
-  CIA::AttributeChange.create!({:event => event, :source => event.source, :attribute_name => "bar"}.merge(options))
+  CIA::AttributeChange.create!({event: event, source: event.source, attribute_name: "bar"}.merge(options))
 end
 
 # simulate a hacked cia event

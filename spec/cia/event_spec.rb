@@ -14,21 +14,21 @@ describe CIA::Event do
     end
 
     it "contains all changes" do
-      change = create_change(:old_value => "a", :new_value => "b")
-      change = create_change(:attribute_name => "foo", :old_value => "b", :new_value => nil, :event => change.event)
+      change = create_change(old_value: "a", new_value: "b")
+      change = create_change(attribute_name: "foo", old_value: "b", new_value: nil, event: change.event)
       change.event.attribute_change_hash.should == {"bar" => ["a", "b"], "foo" => ["b", nil]}
     end
   end
 
   context ".previous" do
     it "is sorted id desc" do
-      events = [create_event(:created_at => 3.days.ago), create_event(:created_at => 2.days.ago), create_event(:created_at => 1.day.ago)].map(&:id)
+      events = [create_event(created_at: 3.days.ago), create_event(created_at: 2.days.ago), create_event(created_at: 1.day.ago)].map(&:id)
       CIA::Event.previous.map(&:id).should == events.reverse
     end
   end
 
   context "validations" do
-    let(:source_attributes){ {:source => nil, :source_id => 99999, :source_type => "Car"} }
+    let(:source_attributes){ {source: nil, source_id: 99999, source_type: "Car"} }
 
     it "validates source" do
       expect{
@@ -37,20 +37,20 @@ describe CIA::Event do
     end
 
     it "does not validates source when action is destroy" do
-      create_event(source_attributes.merge(:action => "destroy"))
+      create_event(source_attributes.merge(action: "destroy"))
     end
 
     it "does not validates source when updating" do
-      create_event.update_attributes!(:source_id => 9999)
+      create_event.update_attributes!(source_id: 9999)
     end
 
     it "does not validates source when source_display_name is present" do
-      create_event(:source => nil, :source_id => -111, :source_type => 'FakeTypeHere', :source_display_name => 'abc')
+      create_event(source: nil, source_id: -111, source_type: 'FakeTypeHere', source_display_name: 'abc')
     end
 
     it "validates source when source_display_name is blank" do
       expect{
-        create_event(:source => nil, :source_id => -111, :source_type => 'FakeTypeHere', :source_display_name => '')
+        create_event(source: nil, source_id: -111, source_type: 'FakeTypeHere', source_display_name: '')
       }.to raise_error
     end
   end

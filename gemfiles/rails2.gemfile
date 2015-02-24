@@ -1,7 +1,0 @@
-source "https://rubygems.org"
-
-gemspec :path=>"../"
-
-gem "iconv"
-gem "after_commit"
-gem "activerecord", "~> 2.3.18"

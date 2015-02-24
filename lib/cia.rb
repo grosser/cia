@@ -58,9 +58,9 @@ module CIA
     transaction_attributes.reject! { |k, v| non_recordable_attributes.include?(k) } if non_recordable_attributes
 
     event = CIA::Event.new(transaction_attributes.merge(
-      :action => action.to_s,
-      :source => source,
-      :message => message
+      action: action.to_s,
+      source: source,
+      message: message
     ))
     event.add_attribute_changes(changes)
     event.save!
