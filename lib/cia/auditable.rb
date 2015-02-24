@@ -28,8 +28,8 @@ module CIA
         raise "cannot have :if and :unless" if options[:if] && options[:unless]
         self.audited_attribute_options = options
 
-        has_many :cia_events, :class_name => "CIA::Event", :as => :source
-        has_many :cia_attribute_changes, :class_name => "CIA::AttributeChange", :as => :source
+        has_many :cia_events, class_name: "CIA::Event", as: :source
+        has_many :cia_attribute_changes, class_name: "CIA::AttributeChange", as: :source
       end
 
       def setup_auditing_callbacks(options)
@@ -39,11 +39,7 @@ module CIA
         [:create, :update, :destroy].each do |callback|
           method, args = if options[:callback] == :after_commit
             send("after_#{callback}"){ |record| record.cia_previous_changes(record.cia_changes) }
-            if ActiveRecord::VERSION::MAJOR == 2
-              ["after_commit_on_#{callback}", []]
-            else # rails 3+
-              [:after_commit, [{:on => callback}]]
-            end
+            [:after_commit, [{on: callback}]]
           else
             ["after_#{callback}", []]
           end

@@ -3,15 +3,14 @@ module CIA
     include SourceValidation
     self.table_name = "cia_events"
 
-    belongs_to :actor, :polymorphic => true
-    belongs_to :source, :polymorphic => true
-    has_many :attribute_changes, :foreign_key => :cia_event_id, :dependent => :destroy
+    belongs_to :actor, polymorphic: true
+    belongs_to :source, polymorphic: true
+    has_many :attribute_changes, foreign_key: :cia_event_id, dependent: :destroy
 
     validates_presence_of :action
 
     def self.previous
-      order = "created_at desc"
-      ActiveRecord::VERSION::MAJOR == 2 ? scoped(:order => order) : order(order)
+      order("created_at desc")
     end
 
     def attribute_change_hash
@@ -24,11 +23,11 @@ module CIA
     def add_attribute_changes(changes)
       changes.each do |attribute_name, (old_value, new_value)|
         attribute_changes.build(
-          :event => self,
-          :attribute_name => attribute_name,
-          :old_value => old_value,
-          :new_value => new_value,
-          :source => source
+          event: self,
+          attribute_name: attribute_name,
+          old_value: old_value,
+          new_value: new_value,
+          source: source
         )
       end
     end

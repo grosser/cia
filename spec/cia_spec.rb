@@ -12,10 +12,10 @@ describe CIA do
 
     it "starts a new transaction" do
       result = 1
-      CIA.audit({:a => 1}) do
+      CIA.audit(a: 1) do
         result = CIA.current_transaction
       end
-      result.should == {:a => 1}
+      result.should == {a: 1}
     end
 
     it "stops the transaction after the block" do
@@ -40,40 +40,40 @@ describe CIA do
 
     it "can stack" do
       states = []
-      CIA.audit(:a => 1) do
+      CIA.audit(a: 1) do
         states << CIA.current_transaction
-        CIA.audit(:b => 1) do
+        CIA.audit(b: 1) do
           states << CIA.current_transaction
         end
         states << CIA.current_transaction
       end
       states << CIA.current_transaction
-      states.should == [{:a => 1}, {:b => 1}, {:a => 1}, nil]
+      states.should == [{a: 1}, {b: 1}, {a: 1}, nil]
     end
   end
 
   describe ".amend_audit" do
     it "opens a new transaction when none exists" do
       t = nil
-      CIA.amend_audit(:actor => 111){ t = CIA.current_transaction }
-      t.should == {:actor => 111}
+      CIA.amend_audit(actor: 111){ t = CIA.current_transaction }
+      t.should == {actor: 111}
     end
 
     it "amends a running transaction" do
       t = nil
-      CIA.amend_audit(:actor => 222, :ip_address => 123) do
-        CIA.amend_audit(:actor => 111) { t = CIA.current_transaction }
+      CIA.amend_audit(actor: 222, ip_address: 123) do
+        CIA.amend_audit(actor: 111) { t = CIA.current_transaction }
       end
-      t.should == {:actor => 111, :ip_address => 123}
+      t.should == {actor: 111, ip_address: 123}
     end
 
     it "returns to old state after transaction" do
-      CIA.amend_audit(:actor => 222, :ip_address => 123) do
-        CIA.amend_audit(:actor => 111) {  }
+      CIA.amend_audit(actor: 222, ip_address: 123) do
+        CIA.amend_audit(actor: 111) {  }
       end
       CIA.current_transaction.should == nil
 
-      CIA.amend_audit(:actor => 111) {  }
+      CIA.amend_audit(actor: 111) {  }
       CIA.current_transaction.should == nil
     end
   end
@@ -82,7 +82,7 @@ describe CIA do
     let(:object) { Car.new }
 
     around do |example|
-      CIA.audit :actor => User.create! do
+      CIA.audit actor: User.create! do
         example.call
       end
     end
@@ -105,17 +105,17 @@ describe CIA do
     it "tracks update" do
       object.save!
       expect{
-        object.update_attributes(:wheels => 3)
+        object.update_attributes(wheels: 3)
       }.to change{ CIA::Event.count }.by(+1)
       CIA::Event.last.action.should == "update"
     end
 
     it "does not track failed changes" do
-      car = Car.create!(:wheels => 1).id
+      car = Car.create!(wheels: 1).id
       expect{
-        expect{ FailCar.new(:wheels => 4).save  }.to raise_error(FailCar::Oops)
+        expect{ FailCar.new(wheels: 4).save  }.to raise_error(FailCar::Oops)
         car = FailCar.find(car)
-        expect{ car.update_attributes(:wheels => 2) }.to raise_error(FailCar::Oops)
+        expect{ car.update_attributes(wheels: 2) }.to raise_error(FailCar::Oops)
         expect{ car.destroy }.to raise_error(FailCar::Oops)
       }.to_not change{ CIA::Event.count }
     end
@@ -132,7 +132,7 @@ describe CIA do
     it "is ok with non-attribute methods passed into .audit if they are set as non-recordable" do
       CIA.non_recordable_attributes = [:foo]
       expect {
-        CIA.audit(:actor => User.create!, :foo => 'bar') {
+        CIA.audit(actor: User.create!, foo: 'bar') {
           object.save!
         }
       }.to change{ CIA::Event.count }.by(+1)
@@ -184,7 +184,7 @@ describe CIA do
       it "tracks custom changes" do
         object.save!
         expect{
-          object.update_attributes(:wheels => 3)
+          object.update_attributes(wheels: 3)
         }.to change{ CIA::Event.count }.by(+1)
         CIA::Event.last.action.should == "update"
         CIA::Event.last.attribute_change_hash.should == {
@@ -248,7 +248,7 @@ describe CIA do
 
       it "records attributes in transaction" do
         event = nil
-        CIA.audit :actor => User.create!, :ip_address => "1.2.3.4" do
+        CIA.audit actor: User.create!, ip_address: "1.2.3.4" do
           event = CIA.record(:destroy, Car.create!)
         end
         event.ip_address.should == "1.2.3.4"
@@ -281,14 +281,14 @@ describe CIA do
       end
 
       it "records attribute changes" do
-        source = Car.create!(:wheels => 2)
+        source = Car.create!(wheels: 2)
         source.wheels = 4
         event = CIA.record(:update, source).reload
         parse_event_changes(event).should == [["wheels", "2", "4"]]
       end
 
       it "records attribute deletions" do
-        source = Car.create!(:wheels => 2)
+        source = Car.create!(wheels: 2)
         source.wheels = nil
         event = CIA.record(:update, source).reload
         parse_event_changes(event).should == [["wheels", "2", nil]]
@@ -367,7 +367,7 @@ describe CIA do
     end
 
     context "with after_commit" do
-      let(:object){ CarWithTransactions.new(:wheels => 1) }
+      let(:object){ CarWithTransactions.new(wheels: 1) }
 
       it "still tracks" do
         expect{
@@ -381,13 +381,13 @@ describe CIA do
 
         # does not re-track old changes
         expect{
-          CIA.audit{ object.update_attributes(:drivers => 2) }
+          CIA.audit{ object.update_attributes(drivers: 2) }
         }.to change{ CIA::Event.count }.by(+1)
         CIA::Event.last.attribute_change_hash.should == {"drivers" => [nil, "2"]}
 
         # empty changes
         expect{
-          CIA.audit{ object.update_attributes(:drivers => 2) }
+          CIA.audit{ object.update_attributes(drivers: 2) }
         }.to_not change{ CIA::Event.count }
       end
 
@@ -399,7 +399,7 @@ describe CIA do
           }.to change{ object.class.count }.by(+1)
         rescue RuntimeError => e
           # errors from after_commit are never raised in rails 3+
-          raise e if ActiveRecord::VERSION::MAJOR != 2 || e.message != "XXX"
+          raise e if e.message != "XXX"
         end
       end
     end
@@ -417,7 +417,7 @@ describe CIA do
     end
 
     it "is the current :actor" do
-      CIA.audit :actor => 111 do
+      CIA.audit actor: 111 do
         CIA.current_actor.should == 111
       end
     end
@@ -430,9 +430,9 @@ describe CIA do
     end
 
     it "sets when transaction is started" do
-      CIA.audit :actor => 222 do
+      CIA.audit actor: 222 do
         CIA.current_actor = 111
-        CIA.current_transaction.should == {:actor => 111}
+        CIA.current_transaction.should == {actor: 111}
       end
     end
   end

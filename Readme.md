@@ -5,7 +5,7 @@ Audit model actions like update/create/destroy/<custom> + attribute changes.
 
  - normalized and queryable through table layout
  - actors and subjects are polymorphic
- - works on ActiveRecord 2,3,4
+ - works on ActiveRecord 3.2, 4.0 and 4.1
 
 Table layout:
 
