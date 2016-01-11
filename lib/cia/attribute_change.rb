@@ -19,7 +19,7 @@ module CIA
     end
 
     def self.max_value_size
-      @max_value_size ||= columns.detect { |c| c.name == "old_value" }.limit
+      @max_value_size ||= (columns.detect { |c| c.name == "old_value" }.limit || 255)
     end
 
     def self.serialize_for_storage(item, &block)

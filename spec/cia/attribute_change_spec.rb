@@ -4,7 +4,7 @@ require 'spec_helper'
 describe CIA::AttributeChange do
   it "stores times as db format" do
     t = Time.now.utc
-    create_change(old_value: t).reload.old_value.sub(/\.\d+$/,'').should == t.to_s(:db)
+    create_change(old_value: t).reload.old_value.sub(/\.\d+$/,'').sub(/ UTC$/, '').should == t.to_s(:db)
   end
 
   it "stores dates as db format" do
@@ -40,7 +40,7 @@ describe CIA::AttributeChange do
     it "finds with attribute" do
       a = create_change attribute_name: :xxx
       b = create_change attribute_name: :yyy
-      CIA::AttributeChange.on_attribute(:xxx).all.should == [a]
+      CIA::AttributeChange.on_attribute(:xxx).to_a.should == [a]
     end
   end
 
