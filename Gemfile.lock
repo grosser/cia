@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cia (0.5.9)
+    cia (0.5.10)
       json
 
 GEM
@@ -55,4 +55,4 @@ DEPENDENCIES
   wwtd
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
