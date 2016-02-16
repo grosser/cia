@@ -12,7 +12,7 @@ Gem::Specification.new name, CIA::VERSION do |s|
   s.add_runtime_dependency "json"
   s.add_development_dependency 'bump'
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec', '~>2'
+  s.add_development_dependency 'rspec', '>= 3.4'
   s.add_development_dependency 'wwtd'
   s.add_development_dependency 'activerecord'
   s.add_development_dependency 'sqlite3'

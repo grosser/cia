@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe CIA do
   it "has a VERSION" do
-    CIA::VERSION.should =~ /^[\.\da-z]+$/
+    expect(CIA::VERSION).to match(/^[\.\da-z]+$/)
   end
 
   describe ".audit" do
     it "has no transaction when it starts" do
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
     end
 
     it "starts a new transaction" do
@@ -15,16 +15,16 @@ describe CIA do
       CIA.audit(a: 1) do
         result = CIA.current_transaction
       end
-      result.should == {a: 1}
+      expect(result).to eq(a: 1)
     end
 
     it "stops the transaction after the block" do
       CIA.audit({}){}
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
     end
 
     it "returns the block content" do
-      CIA.audit({}){ 1 }.should == 1
+      expect(CIA.audit({}){ 1 }).to eq(1)
     end
 
     it "is threadsafe" do
@@ -34,7 +34,7 @@ describe CIA do
         end
       end
       sleep 0.01
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
       sleep 0.04 # so next tests dont fail
     end
 
@@ -48,7 +48,7 @@ describe CIA do
         states << CIA.current_transaction
       end
       states << CIA.current_transaction
-      states.should == [{a: 1}, {b: 1}, {a: 1}, nil]
+      expect(states).to eq([{a: 1}, {b: 1}, {a: 1}, nil])
     end
   end
 
@@ -56,7 +56,7 @@ describe CIA do
     it "opens a new transaction when none exists" do
       t = nil
       CIA.amend_audit(actor: 111){ t = CIA.current_transaction }
-      t.should == {actor: 111}
+      expect(t).to eq(actor: 111)
     end
 
     it "amends a running transaction" do
@@ -64,17 +64,17 @@ describe CIA do
       CIA.amend_audit(actor: 222, ip_address: 123) do
         CIA.amend_audit(actor: 111) { t = CIA.current_transaction }
       end
-      t.should == {actor: 111, ip_address: 123}
+      expect(t).to eq(actor: 111, ip_address: 123)
     end
 
     it "returns to old state after transaction" do
       CIA.amend_audit(actor: 222, ip_address: 123) do
         CIA.amend_audit(actor: 111) {  }
       end
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
 
       CIA.amend_audit(actor: 111) {  }
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
     end
   end
 
@@ -91,7 +91,7 @@ describe CIA do
       expect{
         object.save!
       }.to change{ CIA::Event.count }.by(+1)
-      CIA::Event.last.action.should == "create"
+      expect(CIA::Event.last.action).to eq("create")
     end
 
     it "tracks delete" do
@@ -99,7 +99,7 @@ describe CIA do
       expect{
         object.destroy
       }.to change{ CIA::Event.count }.by(+1)
-      CIA::Event.last.action.should == "destroy"
+      expect(CIA::Event.last.action).to eq("destroy")
     end
 
     it "tracks update" do
@@ -107,7 +107,7 @@ describe CIA do
       expect{
         object.update_attributes(wheels: 3)
       }.to change{ CIA::Event.count }.by(+1)
-      CIA::Event.last.action.should == "update"
+      expect(CIA::Event.last.action).to eq("update")
     end
 
     it "does not track failed changes" do
@@ -121,7 +121,7 @@ describe CIA do
     end
 
     it "is rolled back if auditing fails" do
-      CIA.should_receive(:record).and_raise("XXX")
+      expect(CIA).to receive(:record).and_raise("XXX")
       expect{
         expect{
           CIA.audit{ object.save! }
@@ -142,7 +142,7 @@ describe CIA do
       let(:object){ NestedCar.new }
 
       it "has the exclusive sub-classes attributes of the nested class" do
-        object.class.audited_attributes.should == ["drivers"]
+        expect(object.class.audited_attributes).to eq(%w(drivers))
       end
 
       it "does not record twice for nested classes" do
@@ -162,7 +162,7 @@ describe CIA do
       let(:object){ InheritedCar.new }
 
       it "has the super-classes attributes" do
-        object.class.audited_attributes.should == ["wheels"]
+        expect(object.class.audited_attributes).to eq(%w(wheels))
       end
 
       it "does not record twice for nested classes" do
@@ -186,11 +186,11 @@ describe CIA do
         expect{
           object.update_attributes(wheels: 3)
         }.to change{ CIA::Event.count }.by(+1)
-        CIA::Event.last.action.should == "update"
-        CIA::Event.last.attribute_change_hash.should == {
+        expect(CIA::Event.last.action).to eq("update")
+        expect(CIA::Event.last.attribute_change_hash).to eq(
           "wheels" => [nil, "3"],
           "foo" => ["bar", "baz"]
-        }
+        )
       end
     end
 
@@ -202,14 +202,14 @@ describe CIA do
           object.tested = true
           object.save!
         }.to change{ CIA::Event.count }.by(+1)
-        CIA::Event.last.action.should == "create"
+        expect(CIA::Event.last.action).to eq("create")
       end
 
       it "does not track if :if is false" do
         expect{
           object.save!
         }.to_not change{ CIA::Event.count }
-        CIA::Event.last.should == nil
+        expect(CIA::Event.last).to be_nil
       end
     end
 
@@ -220,7 +220,7 @@ describe CIA do
         expect{
           object.save!
         }.to change{ CIA::Event.count }.by(+1)
-        CIA::Event.last.action.should == "create"
+        expect(CIA::Event.last.action).to eq("create")
       end
 
       it "does not track if :unless is true" do
@@ -228,7 +228,7 @@ describe CIA do
           object.tested = true
           object.save!
         }.to_not change{ CIA::Event.count }
-        CIA::Event.last.should == nil
+        expect(CIA::Event.last).to be_nil
       end
     end
 
@@ -243,7 +243,7 @@ describe CIA do
           event = yield
         }.to_not change{ CIA::Event.count }
 
-        event.should == nil
+        expect(event).to be_nil
       end
 
       it "records attributes in transaction" do
@@ -251,7 +251,7 @@ describe CIA do
         CIA.audit actor: User.create!, ip_address: "1.2.3.4" do
           event = CIA.record(:destroy, Car.create!)
         end
-        event.ip_address.should == "1.2.3.4"
+        expect(event.ip_address).to eq("1.2.3.4")
       end
 
       it "records attribute creations" do
@@ -259,7 +259,7 @@ describe CIA do
         source.wheels = 4
         event = CIA.record(:update, source).reload
 
-        parse_event_changes(event).should == [["wheels", nil, "4"]]
+        expect(parse_event_changes(event)).to eq([["wheels", nil, "4"]])
       end
 
       it "can act on attributes in before_save" do
@@ -268,7 +268,7 @@ describe CIA do
         source = Car.create!
         source.wheels = 4
         CIA.record(:update, source)
-        x.should == 1
+        expect(x).to eq(1)
       end
 
       it "records multiple attributes" do
@@ -277,21 +277,21 @@ describe CIA do
         source.drivers = 2
         source.color = "red"
         event = CIA.record(:update, source).reload
-        parse_event_changes(event).should =~ [["wheels", nil, "4"], ["drivers", nil, "2"], ["color", nil, "red"]]
+        expect(parse_event_changes(event)).to eq([["wheels", nil, "4"], ["color", nil, "red"], ["drivers", nil, "2"]])
       end
 
       it "records attribute changes" do
         source = Car.create!(wheels: 2)
         source.wheels = 4
         event = CIA.record(:update, source).reload
-        parse_event_changes(event).should == [["wheels", "2", "4"]]
+        expect(parse_event_changes(event)).to eq([["wheels", "2", "4"]])
       end
 
       it "records attribute deletions" do
         source = Car.create!(wheels: 2)
         source.wheels = nil
         event = CIA.record(:update, source).reload
-        parse_event_changes(event).should == [["wheels", "2", nil]]
+        expect(parse_event_changes(event)).to eq([["wheels", "2", nil]])
       end
 
       it "does not record unaudited attribute changes" do
@@ -305,8 +305,8 @@ describe CIA do
         source.audit_message = "Foo"
         event = CIA.record(:update, source)
 
-        event.message.should == "Foo"
-        parse_event_changes(event).should == []
+        expect(event.message).to eq("Foo")
+        expect(parse_event_changes(event)).to eq([])
       end
 
       it "does not record after saving with an audit_message" do
@@ -326,14 +326,14 @@ describe CIA do
       it "record non-updates even without changes" do
         source = Car.create!
         event = CIA.record(:create, source)
-        parse_event_changes(event).should == []
+        expect(parse_event_changes(event)).to eq([])
       end
     end
 
     context "exception_handler" do
       before do
-        $stderr.stub(:puts)
-        CIA.stub(:current_transaction).and_raise(StandardError.new("foo"))
+        allow($stderr).to receive(:puts)
+        allow(CIA).to receive(:current_transaction).and_raise(StandardError.new("foo"))
       end
 
       def capture_exception
@@ -355,14 +355,14 @@ describe CIA do
         rescue Object => e
           ex = e
         end
-        ex.inspect.should == '#<StandardError: foo>'
+        expect(ex.inspect).to eq('#<StandardError: foo>')
       end
 
       it "can capture exception via handler" do
         ex = capture_exception do
           object.save!
         end
-        ex.inspect.should == '#<StandardError: foo>'
+        expect(ex.inspect).to eq('#<StandardError: foo>')
       end
     end
 
@@ -373,7 +373,7 @@ describe CIA do
         expect{
           CIA.audit{ object.save! }
         }.to change{ CIA::Event.count }.by(+1)
-        CIA::Event.last.attribute_change_hash.should == {"wheels" => [nil, "1"]}
+        expect(CIA::Event.last.attribute_change_hash).to eq("wheels" => [nil, "1"])
       end
 
       it "unsets temp-changes after the save" do
@@ -383,7 +383,7 @@ describe CIA do
         expect{
           CIA.audit{ object.update_attributes(drivers: 2) }
         }.to change{ CIA::Event.count }.by(+1)
-        CIA::Event.last.attribute_change_hash.should == {"drivers" => [nil, "2"]}
+        expect(CIA::Event.last.attribute_change_hash).to eq("drivers" => [nil, "2"])
 
         # empty changes
         expect{
@@ -392,7 +392,7 @@ describe CIA do
       end
 
       it "is not rolled back if auditing fails" do
-        CIA.should_receive(:record).and_raise("XXX")
+        expect(CIA).to receive(:record).and_raise("XXX")
         begin
           expect{
             CIA.audit{ object.save! }
@@ -407,18 +407,18 @@ describe CIA do
 
   context ".current_actor" do
     it "is nil when nothing is set" do
-      CIA.current_actor.should == nil
+      expect(CIA.current_actor).to be_nil
     end
 
     it "is nil when no actor is set" do
       CIA.audit do
-        CIA.current_actor.should == nil
+        expect(CIA.current_actor).to be_nil
       end
     end
 
     it "is the current :actor" do
       CIA.audit actor: 111 do
-        CIA.current_actor.should == 111
+        expect(CIA.current_actor).to eq(111)
       end
     end
   end
@@ -426,13 +426,13 @@ describe CIA do
   context ".current_actor=" do
     it "does nothing if no transaction is running" do
       CIA.current_actor = 111
-      CIA.current_transaction.should == nil
+      expect(CIA.current_transaction).to be_nil
     end
 
     it "sets when transaction is started" do
       CIA.audit actor: 222 do
         CIA.current_actor = 111
-        CIA.current_transaction.should == {actor: 111}
+        expect(CIA.current_transaction).to eq(actor: 111)
       end
     end
   end
