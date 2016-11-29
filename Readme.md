@@ -15,10 +15,10 @@ Table layout:
 
 Install
 =======
-    gem install cia
-Or
 
-    rails plugin install git://github.com/grosser/cia.git
+```Bash
+gem install cia
+```
 
 `rails g migration add_cia` + paste [Migration](https://raw.github.com/grosser/cia/master/MIGRATION.rb)
 
@@ -33,26 +33,24 @@ class User < ActiveRecord::Base
 end
 
 class ApplicationController < ActionController::Base
-  around_filter :scope_auditing
+  around_action :scope_auditing
 
-  def scope_auditing
-    CIA.audit :actor => current_user, :ip_address => request.remote_ip do
-      yield
-    end
+  def scope_auditing(&block)
+    CIA.audit actor: current_user, ip_address: request.remote_ip, &block
   end
 end
 
 # quick access
 User.last.cia_events
 changes = User.last.cia_attribute_changes
-last_passwords = changes.where(:attribute_name => "crypted_password").map(&:new_value)
+last_passwords = changes.where(attribute_name: "crypted_password").map(&:new_value)
 
 # exceptions (raised by default)
-CIA.exception_handler = lambda{|e| raise e unless Rails.env.production? }
+CIA.exception_handler = -> (e) { raise e unless Rails.env.production? }
 
 # conditional auditing
 class User < ActiveRecord::Base
-  audited_attributes :email, :if => :interesting?
+  audited_attributes :email, if: :interesting?
 
   def interesting?
     ...
@@ -72,26 +70,26 @@ end
 # using after_commit, useful if the CIA::Event is stored in a different database then the audited class
 class User < ActiveRecord::Base
   include CIA::Auditable
-  audited_attributes :email, :crypted_password, :callback => :after_commit
+  audited_attributes :email, :crypted_password, callback: :after_commit
 end
 
 # passing arbitrary attributes into the .audit method
 CIA.non_recordable_attributes = [:my_pretty_audit_property]
-CIA.audit(:actor => current_user, :my_pretty_audit_property => "12345") do
+CIA.audit(actor: current_user, my_pretty_audit_property: "12345") do
   ...
 end
 
 # storing complex objects in old/new and reducing it's size if it's to big (serialized via json)
 value = CIA::AttributeChange.serialize_for_storage(["some", "complex"*1000, "object"]){|too_big| too_big.delete_at(1); too_big }
-CIA::AttributeChange.create!(:old_value => value)
+CIA::AttributeChange.create!(old_value: value)
 
 # add something to current transaction or start a new audit
-CIA.audit :bar => :baz, :foo => :bang do
-  CIA.amend_audit :foo => :bar do
+CIA.audit bar: :baz, foo: :bang do
+  CIA.amend_audit foo: :bar do
     puts CIA.current_transaction
   end
 end
--> {:foo => :bar, :bar => :baz}
+-> {foo: :bar, bar: :baz}
 ```
 
 
