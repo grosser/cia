@@ -55,7 +55,7 @@ module CIA
     return if not message and changes.empty? and action.to_s == "update"
 
     transaction_attributes = current_transaction.dup
-    transaction_attributes.reject! { |k, v| non_recordable_attributes.include?(k) } if non_recordable_attributes
+    transaction_attributes.reject! { |k, _v| non_recordable_attributes.include?(k) } if non_recordable_attributes
 
     event = CIA::Event.new(transaction_attributes.reverse_merge(
       action: action.to_s,
@@ -65,11 +65,11 @@ module CIA
     event.add_attribute_changes(changes)
     event.save!
     event
-  rescue Object => e
+  rescue StandardError
     if exception_handler
-      exception_handler.call e
+      exception_handler.call $!
     else
-      raise e
+      raise
     end
   end
 end

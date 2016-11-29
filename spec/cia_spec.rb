@@ -38,7 +38,7 @@ describe CIA do
       sleep 0.04 # so next tests dont fail
     end
 
-    it "can stack" do
+    it "can nest multiple independent transaction" do
       states = []
       CIA.audit(a: 1) do
         states << CIA.current_transaction
@@ -108,6 +108,13 @@ describe CIA do
         object.update_attributes(wheels: 3)
       }.to change{ CIA::Event.count }.by(+1)
       expect(CIA::Event.last.action).to eq("update")
+    end
+
+    it "can override" do
+      CIA.amend_audit message: "custom" do
+        object.save!
+      end
+      expect(CIA::Event.last.message).to eq("custom")
     end
 
     it "does not track failed changes" do
