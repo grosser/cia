@@ -57,7 +57,7 @@ module CIA
     transaction_attributes = current_transaction.dup
     transaction_attributes.reject! { |k, v| non_recordable_attributes.include?(k) } if non_recordable_attributes
 
-    event = CIA::Event.new(transaction_attributes.merge(
+    event = CIA::Event.new(transaction_attributes.reverse_merge(
       action: action.to_s,
       source: source,
       message: message
