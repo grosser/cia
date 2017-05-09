@@ -75,7 +75,7 @@ class CarWithCustomChanges < ActiveRecord::Base
   audit_attribute :wheels, :foo
 
   def cia_changes
-    changes.merge("foo" => ["bar", "baz"])
+    super.merge("foo" => ["bar", "baz"])
   end
 end
 

@@ -8,7 +8,7 @@ Gem::Specification.new name, CIA::VERSION do |s|
   s.homepage = "https://github.com/grosser/#{name}"
   s.files = `git ls-files lib Readme.md`.split("\n")
   s.license = 'MIT'
-  s.required_ruby_version = '>= 2.0.0'
+  s.required_ruby_version = '>= 2.2.0'
   s.add_runtime_dependency "json"
   s.add_development_dependency 'bump'
   s.add_development_dependency 'rake'
