@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cia (0.6.0)
+    cia (0.7.0)
       json
 
 GEM
@@ -23,7 +23,7 @@ GEM
     concurrent-ruby (1.0.2)
     diff-lcs (1.2.5)
     i18n (0.7.0)
-    json (2.0.2)
+    json (2.1.0)
     minitest (5.9.1)
     rake (11.3.0)
     rspec (3.5.0)
