@@ -6,7 +6,15 @@ module CIA
     end
 
     def cia_changes
-      changes
+      if respond_to?(:has_changes_to_save?)
+        if has_changes_to_save?
+          changes_to_save
+        else
+          saved_changes
+        end
+      else
+        changes
+      end
     end
 
     def cia_previous_changes(changes=nil)

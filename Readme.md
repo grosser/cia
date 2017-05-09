@@ -63,7 +63,7 @@ CIA.current_actor = @user
 # custom changes
 class User < ActiveRecord::Base
   def cia_changes
-    changes.merge("this" => ["always", "changes"])
+    super.merge("this" => ["always", "changes"])
   end
 end
 
