@@ -5,7 +5,7 @@ Audit model actions like update/create/destroy/<custom> + attribute changes.
 
  - normalized and queryable through table layout
  - actors and subjects are polymorphic
- - works on ActiveRecord 3.2+
+ - works on ActiveRecord 4.2+
 
 Table layout:
 
@@ -101,4 +101,4 @@ Author
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
-[![Build Status](https://travis-ci.org/grosser/cia.png)](https://travis-ci.org/grosser/cia)
+[![CI](https://github.com/grosser/cia/actions/workflows/actions.yml/badge.svg)](https://github.com/grosser/cia/actions/workflows/actions.yml)

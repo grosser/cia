@@ -1,8 +1,7 @@
 PATH
   remote: ..
   specs:
-    cia (0.6.0)
-      json
+    cia (0.7.0)
 
 GEM
   remote: https://rubygems.org/
@@ -23,7 +22,6 @@ GEM
     concurrent-ruby (1.0.5)
     diff-lcs (1.3)
     i18n (0.8.1)
-    json (2.1.0)
     minitest (5.10.1)
     rake (12.0.0)
     rspec (3.6.0)
@@ -43,7 +41,6 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
-    wwtd (1.3.0)
 
 PLATFORMS
   ruby
@@ -55,7 +52,6 @@ DEPENDENCIES
   rake
   rspec (>= 3.5.0)
   sqlite3
-  wwtd
 
 BUNDLED WITH
-   1.14.6
+   1.17.3

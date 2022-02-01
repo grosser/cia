@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: ["test"]
+        ruby: ["2.6", "2.7"] # TODO: more
+        rails: ["4.2", "5.0", "5.1"] # TODO: more
+    name: ruby${{ matrix.ruby }} rails${{ matrix.rails }} rake spec
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      env:
+        BUNDLE_GEMFILE: gemfiles/rails${{ matrix.rails }}.gemfile
+    - run: bundle exec rake spec
+      env:
+        BUNDLE_GEMFILE: gemfiles/rails${{ matrix.rails }}.gemfile
