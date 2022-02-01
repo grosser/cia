@@ -44,14 +44,14 @@ module CIA
         return if audited_attributes_callbacks_added
         self.audited_attributes_callbacks_added = true
 
-        [:create, :update, :destroy].each do |callback|
+        [['after', :create], ['after', :update], ['before', :destroy]].each do |callback|
           method, args = if options[:callback] == :after_commit
-            send("after_#{callback}"){ |record| record.cia_previous_changes(record.cia_changes) }
-            [:after_commit, [{on: callback}]]
+            send("#{callback[0]}_#{callback[1]}"){ |record| record.cia_previous_changes(record.cia_changes) }
+            [:after_commit, [{on: callback[1]}]]
           else
-            ["after_#{callback}", []]
+            ["#{callback[0]}_#{callback[1]}", []]
           end
-          send(method, *args) { |record| CIA.record(callback, record) }
+          send(method, *args) { |record| CIA.record(callback[1], record) }
         end
       end
     end
