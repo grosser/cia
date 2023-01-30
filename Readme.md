@@ -29,7 +29,7 @@ Usage
 ```Ruby
 class User < ActiveRecord::Base
   include CIA::Auditable
-  audited_attributes :email, :crypted_password
+  audit_attribute :email, :crypted_password
 end
 
 class ApplicationController < ActionController::Base
@@ -50,7 +50,7 @@ CIA.exception_handler = -> (e) { raise e unless Rails.env.production? }
 
 # conditional auditing
 class User < ActiveRecord::Base
-  audited_attributes :email, if: :interesting?
+  audit_attribute :email, if: :interesting?
 
   def interesting?
     ...
@@ -70,7 +70,7 @@ end
 # using after_commit, useful if the CIA::Event is stored in a different database then the audited class
 class User < ActiveRecord::Base
   include CIA::Auditable
-  audited_attributes :email, :crypted_password, callback: :after_commit
+  audit_attribute :email, :crypted_password, callback: :after_commit
 end
 
 # passing arbitrary attributes into the .audit method
