@@ -5,22 +5,50 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  test:
+  specs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: ["test"]
-        ruby: ["2.6", "2.7"] # TODO: more
-        rails: ["4.2", "5.0", "5.1"] # TODO: more
-    name: ruby${{ matrix.ruby }} rails${{ matrix.rails }} rake spec
+        ruby:
+          - "2.7"
+        gemfile:
+          - "rails4.2"
+          - "rails5.0"
+          - "rails5.1"
+          - "rails5.2"
+          - "rails6.0"
+          - "rails6.1"
+          - "rails7.0"
+        include:
+          - {ruby: "2.6", gemfile: "rails4.2"}
+          - {ruby: "2.6", gemfile: "rails5.0"}
+          - {ruby: "2.6", gemfile: "rails5.1"}
+          - {ruby: "2.6", gemfile: "rails5.2"}
+    name: ruby${{ matrix.ruby }} ${{ matrix.gemfile }} rake spec
     steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
+    - uses: zendesk/checkout@v3
+    - name: Set up Ruby
+      uses: zendesk/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       env:
-        BUNDLE_GEMFILE: gemfiles/rails${{ matrix.rails }}.gemfile
+        BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     - run: bundle exec rake spec
       env:
-        BUNDLE_GEMFILE: gemfiles/rails${{ matrix.rails }}.gemfile
+        BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+
+  specs_successful:
+    name: Specs passing?
+    needs: specs
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if ${{ needs.specs.result == 'success' }}
+          then
+            echo "All specs passed"
+          else
+            echo "Some specs failed"
+            false
+          fi
