@@ -105,7 +105,7 @@ describe CIA do
     it "tracks update" do
       object.save!
       expect{
-        object.update_attributes(wheels: 3)
+        object.update(wheels: 3)
       }.to change{ CIA::Event.count }.by(+1)
       expect(CIA::Event.last.action).to eq("update")
     end
@@ -122,7 +122,7 @@ describe CIA do
       expect{
         expect{ FailCar.new(wheels: 4).save  }.to raise_error(FailCar::Oops)
         car = FailCar.find(car)
-        expect{ car.update_attributes(wheels: 2) }.to raise_error(FailCar::Oops)
+        expect{ car.update(wheels: 2) }.to raise_error(FailCar::Oops)
         expect{ car.destroy }.to raise_error(FailCar::Oops)
       }.to_not change{ CIA::Event.count }
     end
@@ -191,7 +191,7 @@ describe CIA do
       it "tracks custom changes" do
         object.save!
         expect{
-          object.update_attributes(wheels: 3)
+          object.update(wheels: 3)
         }.to change{ CIA::Event.count }.by(+1)
         expect(CIA::Event.last.action).to eq("update")
         expect(CIA::Event.last.attribute_change_hash).to eq(
@@ -388,13 +388,13 @@ describe CIA do
 
         # does not re-track old changes
         expect{
-          CIA.audit{ object.update_attributes(drivers: 2) }
+          CIA.audit{ object.update(drivers: 2) }
         }.to change{ CIA::Event.count }.by(+1)
         expect(CIA::Event.last.attribute_change_hash).to eq("drivers" => [nil, "2"])
 
         # empty changes
         expect{
-          CIA.audit{ object.update_attributes(drivers: 2) }
+          CIA.audit{ object.update(drivers: 2) }
         }.to_not change{ CIA::Event.count }
       end
 

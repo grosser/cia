@@ -41,7 +41,7 @@ describe CIA::Event do
     end
 
     it "does not validates source when updating" do
-      create_event.update_attributes!(source_id: 9999)
+      create_event.update!(source_id: 9999)
     end
 
     it "does not validates source when source_display_name is present" do
