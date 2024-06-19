@@ -1,16 +1,23 @@
+require_relative "./source_validation"
+
 module CIA
-  class Event < ActiveRecord::Base
+  module EventMethods
+    extend ActiveSupport::Concern
     include SourceValidation
-    self.table_name = "cia_events"
 
-    belongs_to :actor, polymorphic: true
-    belongs_to :source, polymorphic: true
-    has_many :attribute_changes, foreign_key: :cia_event_id, inverse_of: :event, dependent: :destroy
+    included do
+      self.table_name = "cia_events"
+      belongs_to :actor, polymorphic: true
+      belongs_to :source, polymorphic: true
+      has_many :attribute_changes, foreign_key: :cia_event_id, inverse_of: :event, dependent: :destroy
 
-    validates_presence_of :action
+      validates_presence_of :action
+    end
 
-    def self.previous
-      order("created_at desc")
+    class_methods do
+      def previous
+        order("created_at desc")
+      end
     end
 
     def attribute_change_hash
