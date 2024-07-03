@@ -20,12 +20,6 @@ jobs:
           - "rails6.1"
           - "rails7.0"
         include:
-          - {ruby: "2.6", gemfile: "rails4.2"}
-          - {ruby: "2.6", gemfile: "rails5.0"}
-          - {ruby: "2.6", gemfile: "rails5.1"}
-          - {ruby: "2.6", gemfile: "rails5.2"}
-          - {ruby: "2.7", gemfile: "rails5.0"}
-          - {ruby: "2.7", gemfile: "rails5.1"}
           - {ruby: "2.7", gemfile: "rails5.2"}
     name: ruby${{ matrix.ruby }} ${{ matrix.gemfile }} rake spec
     steps:

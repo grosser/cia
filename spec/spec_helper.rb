@@ -2,10 +2,6 @@ require 'cia'
 
 I18n.enforce_available_locales = false
 
-if ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2
-  ActiveRecord::Base.raise_in_transactional_callbacks = true
-end
-
 module CIA
   class Event < ActiveRecord::Base
     include EventMethods

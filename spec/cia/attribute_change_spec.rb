@@ -4,7 +4,7 @@ require 'spec_helper'
 describe CIA::AttributeChange do
   it "stores times as db format" do
     t = Time.now.utc
-    expect(create_change(old_value: t).reload.old_value.sub(/\.\d+$/,'').sub(/ UTC$/, '')).to eq(t.to_s(:db))
+    expect(create_change(old_value: t).reload.old_value.sub(/\.\d+$/,'').sub(/ UTC$/, '')).to eq(t.strftime("%Y-%m-%d %H:%M:%S"))
   end
 
   it "stores dates as db format" do
