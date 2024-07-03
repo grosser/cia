@@ -16,5 +16,5 @@ Gem::Specification.new name, CIA::VERSION do |s|
   s.add_development_dependency 'bump'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '>= 3.4'
-  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency 'sqlite3', '~> 1.4'
 end
