@@ -50,7 +50,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.1)
-    sqlite3 (1.7.3)
+    sqlite3 (1.6.9)
       mini_portile2 (~> 2.8.0)
     timeout (0.4.1)
     tzinfo (2.0.6)
@@ -64,7 +64,7 @@ DEPENDENCIES
   cia!
   rake
   rspec (>= 3.4)
-  sqlite3 (~> 1.4)
+  sqlite3 (~> 1.6.0)
 
 BUNDLED WITH
    2.5.14
