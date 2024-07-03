@@ -6,6 +6,16 @@ if ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2
   ActiveRecord::Base.raise_in_transactional_callbacks = true
 end
 
+module CIA
+  class Event < ActiveRecord::Base
+    include EventMethods
+  end
+
+  class AttributeChange < ActiveRecord::Base
+    include AttributeChangeMethods
+  end
+end
+
 RSpec.configure do |config|
   config.before do
     CIA::Event.delete_all

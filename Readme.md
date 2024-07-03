@@ -22,6 +22,29 @@ gem install cia
 
 `rails g migration add_cia` + paste [Migration](https://raw.github.com/grosser/cia/master/MIGRATION.rb)
 
+Then, create these two models in `app/models/cia`:
+
+```ruby
+# app/models/cia/event.rb
+
+module CIA
+  class Event < ActiveRecord::Base
+    include EventMethods
+  end
+end
+```
+
+```ruby
+# app/models/cia/attribute_change.rb
+
+module CIA
+  class AttributeChange < ActiveRecord::Base
+    include AttributeChangeMethods
+  end
+end
+```
+
+If you’re using multiple databases, these models should inherit from an abstract class that specifies a database connection, not directly from ActiveRecord::Base.
 
 Usage
 =====

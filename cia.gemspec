@@ -9,9 +9,12 @@ Gem::Specification.new name, CIA::VERSION do |s|
   s.files = `git ls-files lib Readme.md`.split("\n")
   s.license = 'MIT'
   s.required_ruby_version = '>= 2.6.0'
+
+
+  s.add_dependency 'activerecord', '>= 4.2'
+  s.add_dependency 'activesupport', '>= 4.2'
   s.add_development_dependency 'bump'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '>= 3.4'
-  s.add_development_dependency 'activerecord', '>= 4.2'
   s.add_development_dependency 'sqlite3'
 end
